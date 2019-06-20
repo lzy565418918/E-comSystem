@@ -70,10 +70,11 @@ export default {
               password: this.ruleForm.checkPass
             }
           }).then(res => {
-            console.log(res.data.meta);
+            console.log(res);
 
             let { msg, status } = res.data.meta;
             if (status === 200) {
+              window.localStorage.setItem("token", res.data.data.token);
               this.$message({
                 showClose: true,
                 message: msg,
@@ -85,13 +86,17 @@ export default {
             } else {
               this.$message({
                 showClose: true,
-                message: "用户名或密码错误",
+                message: msg,
                 type: "error"
               });
             }
           });
         } else {
-          console.log("error submit!!");
+          this.$message({
+                showClose: true,
+                message: '用户名和密码不能为空',
+                type: "error"
+              });
           return false;
         }
       });

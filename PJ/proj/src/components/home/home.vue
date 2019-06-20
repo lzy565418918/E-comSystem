@@ -1,51 +1,58 @@
 <template>
-    <el-container>
-  <el-header>Header</el-header>
   <el-container>
-    <el-aside width="200px">Aside</el-aside>
-    <el-main>Main</el-main>
+    <Head></Head>
+    <el-container>
+     <SideBar></SideBar>
+      <el-main>Main</el-main>
+    </el-container>
   </el-container>
-</el-container>
 </template>
 
 <script>
+import Head from "./head/head";
+import SideBar from "./sidebar/sidebar";
 export default {
-
-}
+  components: {
+    Head,
+    SideBar
+  }
+};
 </script>
 
 <style>
-.el-header {
-    background-color: #B3C0D1;
-    color: #333;
-    text-align: center;
-    line-height: 60px;
-  }
-  
-  .el-aside {
-    background-color: #D3DCE6;
-    color: #333;
-    text-align: center;
-    line-height: 200px;
-  }
-  
-  .el-main {
-    background-color: #E9EEF3;
-    color: #333;
-    text-align: center;
-    line-height: 160px;
-  }
-  
-  body > .el-container {
-    margin-bottom: 40px;
-  }
-  
-  .el-container:nth-child(5) .el-aside,
-  .el-container:nth-child(6) .el-aside {
-    line-height: 260px;
-  }
-  
-  .el-container:nth-child(7) .el-aside {
-    line-height: 320px;
-  }
+.el-main {
+  background-color: #e9eef3;
+  color: #333;
+  text-align: center;
+  line-height: 160px;
+}
+#app > .el-container {
+  height: 100%;
+}
+/* .bg-purple-dark {
+  background: #99a9bf;
+}
+.bg-purple {
+  background: #d3dce6;
+}
+.bg-purple-light {
+  background: #e5e9f2;
+} */
+.grid-content {
+  border-radius: 4px;
+  min-height: 36px;
+}
+.row-bg {
+  padding: 10px 0;
+  background-color: #f9fafc;
+}
+
+
+.my-menu {
+  height: 100%;
+}
+.my-title {
+  position: absolute;
+  left: 20px;
+}
 </style>
