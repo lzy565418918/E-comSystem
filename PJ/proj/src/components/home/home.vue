@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container style="flex-direction: column">
     <Head></Head>
     <el-container>
      <SideBar></SideBar>
@@ -26,18 +26,9 @@ export default {
   text-align: center;
   line-height: 160px;
 }
-#app > .el-container {
+#app>.el-container {
   height: 100%;
 }
-/* .bg-purple-dark {
-  background: #99a9bf;
-}
-.bg-purple {
-  background: #d3dce6;
-}
-.bg-purple-light {
-  background: #e5e9f2;
-} */
 .grid-content {
   border-radius: 4px;
   min-height: 36px;

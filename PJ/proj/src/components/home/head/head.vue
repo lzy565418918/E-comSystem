@@ -10,7 +10,7 @@
       </el-col>
       <el-col :span="4">
         <div class="grid-content bg-purple">
-          <a href="#" class="out">退出</a>
+          <a href="#" class="out" @click.prevent="out">退出</a>
         </div>
       </el-col>
     </el-header>
@@ -18,12 +18,35 @@
 
 <script>
 export default {
-
+  data(){
+    return {
+      msg:''
+    }
+  },
+  methods: {
+      out() {
+        this.$confirm('是否继续退出?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          window.localStorage.removeItem('token')
+          this.$router.push('/login')
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+      }
+    }
 }
 </script>
 
 <style>
 .el-header {
+  /* width: 100%; */
+  height: 60px;
   background-color: #b3c0d1;
   color: #333;
   text-align: center;

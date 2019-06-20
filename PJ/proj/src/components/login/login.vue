@@ -17,7 +17,9 @@
         <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
+        <div id="go">
+          <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
+        </div>
       </el-form-item>
     </el-form>
   </div>
@@ -57,6 +59,7 @@ export default {
   },
   methods: {
     submitForm(formName) {
+     
       this.$refs[formName].validate(valid => {
         console.log(this.ruleForm.pass);
         console.log(this.ruleForm.checkPass);
@@ -93,13 +96,14 @@ export default {
           });
         } else {
           this.$message({
-                showClose: true,
-                message: '用户名和密码不能为空',
-                type: "error"
-              });
+            showClose: true,
+            message: "用户名和密码不能为空",
+            type: "error"
+          });
           return false;
         }
       });
+    
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
@@ -127,7 +131,7 @@ export default {
   padding: 40px;
   border-radius: 5px;
 }
-.el-button {
+#go > .el-button--primary {
   width: 100%;
 }
 </style>

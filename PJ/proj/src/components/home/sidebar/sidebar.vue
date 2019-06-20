@@ -3,6 +3,7 @@
     <el-menu
       default-active="2"
       class="el-menu-vertical-demo my-menu"
+      unique-opened
       @open="handleOpen"
       @close="handleClose"
     >
@@ -11,8 +12,9 @@
         <div slot="title" class="my-title">
           <i class="el-icon-location"></i>
           <span>用户管理</span>
+          <!-- <router-link to="/userlist"></router-link> -->
         </div>
-        <el-menu-item index="1-1">
+        <el-menu-item index="1-1" router>
           <i class="el-icon-menu"></i>
           <span>用户列表</span>
         </el-menu-item>
@@ -80,6 +82,11 @@
 
 <script>
 export default {
+  data(){
+    return {
+      'unique-opened':true
+    }
+  },
   methods: {
     handleOpen(key, keyPath) {
       console.log(key, keyPath);
@@ -93,6 +100,7 @@ export default {
 
 <style>
 .el-aside {
+  width: 100%;
   background-color: #d3dce6;
   color: #333;
   text-align: center;
