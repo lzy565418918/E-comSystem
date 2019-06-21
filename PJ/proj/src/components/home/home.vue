@@ -2,8 +2,11 @@
   <el-container style="flex-direction: column">
     <Head></Head>
     <el-container>
-     <SideBar></SideBar>
-      <el-main>Main</el-main>
+      <SideBar></SideBar>
+      <el-main>
+        <router-view></router-view>
+      </el-main>
+      <!-- <Content></Content> -->
     </el-container>
   </el-container>
 </template>
@@ -11,10 +14,20 @@
 <script>
 import Head from "./head/head";
 import SideBar from "./sidebar/sidebar";
+// import Content from './content/content'
 export default {
   components: {
     Head,
     SideBar
+    // Content
+  },
+  mounted(){
+    const token = window.localStorage.getItem('token')
+    console.log(token);
+    if(!token){
+      this.$message.error('请先登录')
+      this.$router.push({ name: 'login' })
+    }
   }
 };
 </script>
@@ -26,7 +39,7 @@ export default {
   text-align: center;
   line-height: 160px;
 }
-#app>.el-container {
+#app > .el-container {
   height: 100%;
 }
 .grid-content {
@@ -37,8 +50,6 @@ export default {
   padding: 10px 0;
   background-color: #f9fafc;
 }
-
-
 .my-menu {
   height: 100%;
 }

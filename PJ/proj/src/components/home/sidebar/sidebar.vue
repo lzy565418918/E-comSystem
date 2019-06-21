@@ -3,7 +3,8 @@
     <el-menu
       default-active="2"
       class="el-menu-vertical-demo my-menu"
-      unique-opened
+      :unique-opened="true"
+      router
       @open="handleOpen"
       @close="handleClose"
     >
@@ -14,7 +15,7 @@
           <span>用户管理</span>
           <!-- <router-link to="/userlist"></router-link> -->
         </div>
-        <el-menu-item index="1-1" router>
+        <el-menu-item index="/home/userlist" router>
           <i class="el-icon-menu"></i>
           <span>用户列表</span>
         </el-menu-item>
@@ -25,11 +26,11 @@
           <i class="el-icon-location"></i>
           <span>权限管理</span>
         </div>
-        <el-menu-item index="2-1">
+        <el-menu-item index="/home/rolelist">
           <i class="el-icon-menu"></i>
           <span>角色列表</span>
         </el-menu-item>
-        <el-menu-item index="2-2">
+        <el-menu-item index="/home/limitslist">
           <i class="el-icon-menu"></i>
           <span>权限列表</span>
         </el-menu-item>
@@ -40,15 +41,15 @@
           <i class="el-icon-location"></i>
           <span>商品管理</span>
         </div>
-        <el-menu-item index="3-1">
+        <el-menu-item index="/home/goodlist">
           <i class="el-icon-menu"></i>
           <span>商品列表</span>
         </el-menu-item>
-        <el-menu-item index="3-2">
+        <el-menu-item index="/home/classparams">
           <i class="el-icon-menu"></i>
           <span>分类参数</span>
         </el-menu-item>
-        <el-menu-item index="3-3">
+        <el-menu-item index="/home/goodclass">
           <i class="el-icon-menu"></i>
           <span>商品分类</span>
         </el-menu-item>
@@ -59,7 +60,7 @@
           <i class="el-icon-location"></i>
           <span>订单管理</span>
         </div>
-        <el-menu-item index="4-1">
+        <el-menu-item index="/home/orderlist">
           <i class="el-icon-menu"></i>
           <span>订单列表</span>
         </el-menu-item>
@@ -70,7 +71,7 @@
           <i class="el-icon-location"></i>
           <span>数据统计</span>
         </div>
-        <el-menu-item index="5-1">
+        <el-menu-item index="/home/datareport">
           <i class="el-icon-menu"></i>
           <span>数据报表</span>
         </el-menu-item>
