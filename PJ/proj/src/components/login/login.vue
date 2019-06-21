@@ -94,7 +94,7 @@ export default {
               });
             }
           });
-        } else {
+        }else {
           this.$message({
             showClose: true,
             message: "用户名和密码不能为空",
