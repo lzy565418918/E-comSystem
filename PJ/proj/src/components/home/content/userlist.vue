@@ -24,13 +24,17 @@
       <el-table-column prop="username" label="姓名" width="160"></el-table-column>
       <el-table-column prop="email" label="邮箱" width="280"></el-table-column>
       <el-table-column prop="mobile" label="电话" width="280"></el-table-column>
-      <el-table-column prop="mg_state" label="用户状态" width="100">
-        <el-switch v-model="tableData.mg_state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+      <el-table-column label="用户状态" width="100">
+        <template slot-scope="scope">
+          <el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+        </template>
       </el-table-column>
       <el-table-column label="操作">
-        <el-button size="mini" plain type="primary" icon="el-icon-edit"></el-button>
-        <el-button size="mini" plain type="danger" icon="el-icon-delete"></el-button>
-        <el-button size="mini" plain type="success" icon="el-icon-check"></el-button>
+        <template slot-scope="scope">
+          <el-button size="mini" plain type="primary" icon="el-icon-edit"></el-button>
+          <el-button size="mini" plain type="danger" icon="el-icon-delete" v-model="scope.row.id"></el-button>
+          <el-button size="mini" plain type="success" icon="el-icon-check"></el-button>
+        </template>
       </el-table-column>
     </el-table>
     <!-- 分页功能 -->
@@ -55,11 +59,11 @@
         <el-form-item label="密码" prop="password">
           <el-input type="password" v-model="form.password" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱">
+        <el-form-item label="邮箱" prop="email">
           <el-input v-model="form.email" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="电话">
-          <el-input v-model="form.moblie" autocomplete="off"></el-input>
+          <el-input v-model="form.mobile" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -73,20 +77,16 @@
 <script>
 export default {
   data() {
+    // 用户名长度在3到8个字符
     var validatePass = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请输入用户名"));
       } else if (value.length < 3 || value.length > 8) {
         callback(new Error("长度在 3 到 8 个字符"));
       }
-      //   else {
-      //     if (this.form.username !== "") {
-      //       this.$refs.form.validateField("username");
-      //     }
-      //     callback();
-      //   }
+      callback();
     };
-    // 长度在 6 到 11 个字符
+    // 长度在6到11个字符
     var validatePass2 = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请输入密码"));
@@ -95,12 +95,20 @@ export default {
       }
       callback();
     };
+    // 邮箱匹配规则
+    var validatePass3 = (rule, value, callback) => {
+      const reg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+      if (!reg.test(value)) {
+        callback(new Error("邮箱地址格式不正确"));
+      }
+      callback();
+    };
     return {
       tableData: [],
       query: "",
       pagenum: 1,
-      pagesize: 3,
-      pagesizes: [3, 5, 10],
+      pagesize: 6,
+      pagesizes: [3, 6, 10],
       total: 0,
       // 设置模态框显示隐藏
       dialogFormVisible: false,
@@ -111,7 +119,7 @@ export default {
         username: "",
         password: "",
         email: "",
-        moblie: ""
+        mobile: ""
       },
       rules: {
         username: [
@@ -119,7 +127,8 @@ export default {
         ],
         password: [
           { required: true, validator: validatePass2, trigger: "blur" }
-        ]
+        ],
+        email: [{ validator: validatePass3, trigger: "blur" }]
       }
     };
   },
@@ -161,13 +170,9 @@ export default {
     // 添加用户
 
     addUser(formName) {
-            console.log('0');
-
+      // 邮箱验证正则表达式
+      const reg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
       this.$refs[formName].validate(valid => {
-            console.log('1');
-
-        console.log(this.form.username);
-        console.log(this.form.password);
         if (!this.form.username.trim() || !this.form.password.trim()) {
           this.$message({
             showClose: true,
@@ -184,25 +189,31 @@ export default {
             message: "用户名长度在3到8个字符之间",
             type: "error"
           });
-          return false
+          return false;
         } else if (
           this.form.password.length < 6 ||
           this.form.password.length > 11
         ) {
-            console.log('2');
-            
           this.$message({
             showClose: true,
             message: "密码长度在6到11个字符之间",
             type: "error"
           });
+          return false;
+        } else if (!this.form.email && !reg.test(this.form.email)) {
+          this.$message({
+            showClose: true,
+            message: "邮箱地址格式不正确",
+            type: "error"
+          });
+          return false;
         }
         if (valid) {
           this.$http({
             url: "http://localhost:8888/api/private/v1/users",
             method: "post",
             headers: { Authorization: window.localStorage.getItem("token") },
-            data: form
+            data: this.form
           }).then(res => {
             console.log(res);
 
@@ -228,6 +239,7 @@ export default {
         }
       });
     },
+    // 取消添加用户
     resetForm(formName) {
       this.$refs[formName].resetFields();
       this.dialogFormVisible = false;
@@ -235,33 +247,6 @@ export default {
         this.form[key] = "";
       }
     }
-
-    // addUser() {
-    //   this.$http({
-    //     method: "post",
-    //     url: "http://localhost:8888/api/private/v1/users",
-    //     headers: {
-    //       Authorization: window.localStorage.getItem("token")
-    //     },
-    //     data: this.form
-    //   }).then(res => {
-    //     console.log(res);
-
-    //     if (res.data.meta.status === 201) {
-    //       this.dialogFormVisible = false;
-    //       for (const key in this.form) {
-    //         this.form[key] = "";
-    //       }
-    //     }
-    //   });
-    // },
-    // 取消添加
-    // addCancel() {
-    //   this.dialogFormVisible = false;
-    //   for (const key in this.form) {
-    //     this.form[key] = "";
-    //   }
-    // }
   },
 
   mounted() {
