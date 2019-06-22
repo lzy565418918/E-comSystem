@@ -26,7 +26,12 @@
       <el-table-column prop="mobile" label="电话" width="280"></el-table-column>
       <el-table-column label="用户状态" width="100">
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+          <el-switch
+            v-model="scope.row.mg_state"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            @change="changeStatus(scope.row.id,scope.row.mg_state)"
+          ></el-switch>
         </template>
       </el-table-column>
       <el-table-column label="操作">
@@ -85,26 +90,6 @@
         <el-button type="primary" @click="editUser('form')" v-if="showConfirmBtn">确认修改</el-button>
       </div>
     </el-dialog>
-    <!-- 编辑用户模态框 -->
-    <!-- <el-dialog title="修改用户" :visible.sync="dialogFormVisible">
-      <el-form :model="form" label-width="100px" label-position="right" :rules="rules" ref="form">
-        <el-form-item label="用户名" prop="username" :disabled="true">
-    <el-col :span="6">-->
-    <!-- <el-input type="text" v-model="form.username" autocomplete="off"></el-input>
-         
-        </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="form.email" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="电话">
-          <el-input v-model="form.mobile" autocomplete="off"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible=false">取 消</el-button>
-        <el-button type="primary" @click="editUser('form')">确 定</el-button>
-      </div>
-    </el-dialog>-->
   </el-card>
 </template>
 
@@ -149,9 +134,9 @@ export default {
       // id框隐藏
       showIdText: false,
       // showAddBtn添加用户时显示
-      showAddBtn:false,
+      showAddBtn: false,
       // showConfirm修改信息时显示
-      showConfirmBtn:false,
+      showConfirmBtn: false,
       tableData: [],
       query: "",
       pagenum: 1,
@@ -215,13 +200,46 @@ export default {
     searchUsers() {
       this.getUsersList();
     },
+    // 改变用户状态
+    changeStatus(id, status) {
+      console.log(id, status);
+      this.$http({
+        url: `http://localhost:8888/api/private/v1/users/${id}/state/${status}`,
+        method: "put",
+        headers: { Authorization: window.localStorage.getItem("token") }
+      })
+        .then(res => {
+          console.log(res);
+          const { status, msg } = res.data.meta;
+          if (status === 200) {
+            this.$message({
+              showClose: true,
+              message: msg,
+              type: "success"
+            });
+          } else {
+            this.$message({
+              showClose: true,
+              message: msg,
+              type: "error"
+            });
+          }
+        })
+        .catch(err => {
+          this.$message({
+            showClose: true,
+            message: err,
+            type: "error"
+          });
+        });
+    },
     // 点击 添加用户 按钮
     add() {
       this.title = "添加用户";
       this.showPasswordText = true;
-      this.showAddBtn = true
-      this.showConfirmBtn=false
-      this.disabled=false
+      this.showAddBtn = true;
+      this.showConfirmBtn = false;
+      this.disabled = false;
       this.dialogFormVisible = true;
     },
     // 提交添加用户的信息
@@ -315,8 +333,8 @@ export default {
       this.title = "修改用户";
       this.disabled = true;
       this.showPasswordText = false;
-      this.showConfirmBtn = true
-      this.showAddBtn = false
+      this.showConfirmBtn = true;
+      this.showAddBtn = false;
       // 先通过id获取到当前用户
       this.$http({
         url: `http://localhost:8888/api/private/v1/users/${id}`,
