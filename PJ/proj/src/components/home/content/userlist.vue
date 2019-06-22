@@ -15,7 +15,7 @@
       </el-input>
     </el-col>
     <el-col :span="3" class="mycol">
-      <el-button type="success" plain @click="dialogFormVisible = true">添加用户</el-button>
+      <el-button type="success" plain @click="add">添加用户</el-button>
     </el-col>
     <!-- </div> -->
     <!-- 数据表格 -->
@@ -31,8 +31,20 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" plain type="primary" icon="el-icon-edit"></el-button>
-          <el-button size="mini" plain type="danger" icon="el-icon-delete" v-model="scope.row.id"></el-button>
+          <el-button
+            size="mini"
+            plain
+            type="primary"
+            icon="el-icon-edit"
+            @click="handleEdit(scope.row.id)"
+          ></el-button>
+          <el-button
+            size="mini"
+            plain
+            type="danger"
+            icon="el-icon-delete"
+            @click="handleDelete(scope.row.id)"
+          ></el-button>
           <el-button size="mini" plain type="success" icon="el-icon-check"></el-button>
         </template>
       </el-table-column>
@@ -49,15 +61,37 @@
     ></el-pagination>
     <!-- 添加用户模态框 -->
     <!-- dialogFormVisible表示模态框的显示和隐藏 -->
-    <el-dialog title="添加用户" :visible.sync="dialogFormVisible">
+    <el-dialog :title="title" :visible.sync="dialogFormVisible">
       <el-form :model="form" label-width="100px" label-position="right" :rules="rules" ref="form">
         <el-form-item label="用户名" prop="username">
-          <!-- <el-col :span="6"> -->
-          <el-input type="text" v-model="form.username" autocomplete="off"></el-input>
-          <!-- </el-col> -->
+          <el-input type="text" v-model="form.username" autocomplete="off" :disabled="disabled"></el-input>
         </el-form-item>
-        <el-form-item label="密码" prop="password">
+        <el-form-item label="密码" prop="password" v-if="showPasswordText">
           <el-input type="password" v-model="form.password" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="form.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话">
+          <el-input v-model="form.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="id" v-if="showIdText">
+          <el-input v-model="form.id" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="resetForm('form')">取 消</el-button>
+        <el-button type="primary" @click="addUser('form')" v-if="showAddBtn">确 定</el-button>
+        <el-button type="primary" @click="editUser('form')" v-if="showConfirmBtn">确认修改</el-button>
+      </div>
+    </el-dialog>
+    <!-- 编辑用户模态框 -->
+    <!-- <el-dialog title="修改用户" :visible.sync="dialogFormVisible">
+      <el-form :model="form" label-width="100px" label-position="right" :rules="rules" ref="form">
+        <el-form-item label="用户名" prop="username" :disabled="true">
+    <el-col :span="6">-->
+    <!-- <el-input type="text" v-model="form.username" autocomplete="off"></el-input>
+         
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
           <el-input v-model="form.email" autocomplete="off"></el-input>
@@ -67,10 +101,10 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="resetForm('form')">取 消</el-button>
-        <el-button type="primary" @click="addUser('form')">确 定</el-button>
+        <el-button @click="dialogFormVisible=false">取 消</el-button>
+        <el-button type="primary" @click="editUser('form')">确 定</el-button>
       </div>
-    </el-dialog>
+    </el-dialog>-->
   </el-card>
 </template>
 
@@ -98,12 +132,26 @@ export default {
     // 邮箱匹配规则
     var validatePass3 = (rule, value, callback) => {
       const reg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
-      if (!reg.test(value)) {
-        callback(new Error("邮箱地址格式不正确"));
+      if (value !== "") {
+        if (!reg.test(value)) {
+          callback(new Error("邮箱地址格式不正确"));
+        }
       }
       callback();
     };
     return {
+      // title的值为 添加用户 和 编辑信息
+      title: "",
+      // 编辑用户时‘用户名’文本框禁用
+      disabled: false,
+      // 编辑用户时‘密码’文本框隐藏
+      showPasswordText: false,
+      // id框隐藏
+      showIdText: false,
+      // showAddBtn添加用户时显示
+      showAddBtn:false,
+      // showConfirm修改信息时显示
+      showConfirmBtn:false,
       tableData: [],
       query: "",
       pagenum: 1,
@@ -167,8 +215,16 @@ export default {
     searchUsers() {
       this.getUsersList();
     },
-    // 添加用户
-
+    // 点击 添加用户 按钮
+    add() {
+      this.title = "添加用户";
+      this.showPasswordText = true;
+      this.showAddBtn = true
+      this.showConfirmBtn=false
+      this.disabled=false
+      this.dialogFormVisible = true;
+    },
+    // 提交添加用户的信息
     addUser(formName) {
       // 邮箱验证正则表达式
       const reg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
@@ -200,13 +256,15 @@ export default {
             type: "error"
           });
           return false;
-        } else if (!this.form.email && !reg.test(this.form.email)) {
-          this.$message({
-            showClose: true,
-            message: "邮箱地址格式不正确",
-            type: "error"
-          });
-          return false;
+        } else if (this.form.email != "") {
+          if (!reg.test(this.form.email)) {
+            this.$message({
+              showClose: true,
+              message: "邮箱地址格式不正确",
+              type: "error"
+            });
+            return false;
+          }
         }
         if (valid) {
           this.$http({
@@ -226,6 +284,10 @@ export default {
                 message: msg,
                 type: "success"
               });
+              this.$refs[formName].resetFields();
+              for (const key in this.form) {
+                this.form[key] = "";
+              }
               this.dialogFormVisible = false;
               this.getUsersList();
             } else {
@@ -246,6 +308,118 @@ export default {
       for (const key in this.form) {
         this.form[key] = "";
       }
+    },
+    // 点击 编辑用户信息 按钮
+    handleEdit(id) {
+      console.log(id);
+      this.title = "修改用户";
+      this.disabled = true;
+      this.showPasswordText = false;
+      this.showConfirmBtn = true
+      this.showAddBtn = false
+      // 先通过id获取到当前用户
+      this.$http({
+        url: `http://localhost:8888/api/private/v1/users/${id}`,
+        method: "get",
+        headers: { Authorization: window.localStorage.getItem("token") }
+      }).then(res => {
+        this.form = res.data.data;
+      });
+      this.dialogFormVisible = true;
+    },
+    // 提交编辑用户信息
+    editUser(formName) {
+      // 邮箱验证正则表达式
+      const reg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+      this.$refs[formName].validate(valid => {
+        if (this.form.email != "") {
+          if (!reg.test(this.form.email)) {
+            this.$message({
+              showClose: true,
+              message: "邮箱地址格式不正确",
+              type: "error"
+            });
+            return false;
+          }
+        }
+        if (valid) {
+          this.$http({
+            url: `http://localhost:8888/api/private/v1/users/${this.form.id}`,
+            method: "put",
+            headers: { Authorization: window.localStorage.getItem("token") },
+            data: {
+              email: this.form.email,
+              mobile: this.form.mobile
+            }
+          }).then(res => {
+            let { msg, status } = res.data.meta;
+            if (status === 200) {
+              this.$message({
+                showClose: true,
+                message: msg,
+                type: "success"
+              });
+              // 重置表单
+              this.$refs[formName].resetFields();
+              for (const key in this.form) {
+                this.form[key] = "";
+              }
+              // 关闭对话框
+              this.dialogFormVisible = false;
+              //重新刷新页面
+              this.getUsersList();
+            } else {
+              this.$message({
+                showClose: true,
+                message: msg,
+                type: "error"
+              });
+            }
+          });
+        }
+      });
+    },
+    // 点击 删除用户 按钮
+    handleDelete(id) {
+      // console.log(id);
+      this.$confirm("是否确认删除?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          console.log(id);
+
+          this.$http({
+            url: `http://localhost:8888/api/private/v1/users/${id}`,
+            method: "delete",
+            // data: { id: "url:" + id },
+            headers: { Authorization: window.localStorage.getItem("token") }
+          }).then(res => {
+            console.log(res);
+            const { msg, status } = res.data.meta;
+            if (status === 200) {
+              this.$message({
+                showClose: true,
+                message: msg,
+                type: "success"
+              });
+              this.getUsersList();
+            } else {
+              this.$message({
+                showClose: true,
+                message: msg,
+                type: "error"
+              });
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
     }
   },
 
