@@ -50,7 +50,13 @@
             icon="el-icon-delete"
             @click="handleDelete(scope.row.id)"
           ></el-button>
-          <el-button size="mini" plain type="success" icon="el-icon-check"></el-button>
+          <el-button
+            size="mini"
+            plain
+            type="success"
+            icon="el-icon-check"
+            @click="handleRole(scope.row.id)"
+          ></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -64,7 +70,7 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
     ></el-pagination>
-    <!-- 添加用户模态框 -->
+    <!-- 添加用户&编辑用户模态框 -->
     <!-- dialogFormVisible表示模态框的显示和隐藏 -->
     <el-dialog :title="title" :visible.sync="dialogFormVisible">
       <el-form :model="form" label-width="100px" label-position="right" :rules="rules" ref="form">
@@ -88,6 +94,34 @@
         <el-button @click="resetForm('form')">取 消</el-button>
         <el-button type="primary" @click="addUser('form')" v-if="showAddBtn">确 定</el-button>
         <el-button type="primary" @click="editUser('form')" v-if="showConfirmBtn">确认修改</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 分配角色模态框 -->
+    <el-dialog title="分配角色" :visible.sync="assignRole">
+      <!-- :model="form" -->
+      <el-form label-width="120px" label-position="right">
+        <el-form-item label="当前用户">
+          <!--  v-model="form.name" -->
+          {{form.username}}
+        </el-form-item>
+        <el-form-item label="请选择角色">
+          <!-- v-model="form.region" -->
+          <el-select placeholder="请选择角色" v-model="value">
+            <!-- <el-option label="区域一" value="shanghai"></el-option>
+            <el-option label="区域二" value="beijing"></el-option> -->
+            <el-option
+              v-for="item in roleList"
+              :key="item.value"
+              :label="item.roleName"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="assignRole = false">取 消</el-button>
+        <el-button type="primary" @click="addRole()">确 定</el-button>
       </div>
     </el-dialog>
   </el-card>
@@ -127,6 +161,7 @@ export default {
     return {
       // title的值为 添加用户 和 编辑信息
       title: "",
+      label: "",
       // 编辑用户时‘用户名’文本框禁用
       disabled: false,
       // 编辑用户时‘密码’文本框隐藏
@@ -143,8 +178,10 @@ export default {
       pagesize: 6,
       pagesizes: [3, 6, 10],
       total: 0,
-      // 设置模态框显示隐藏
+      // 设置添加&编辑模态框显示隐藏
       dialogFormVisible: false,
+      // assignRole分配角色模态框
+      assignRole: false,
       // 文字文本右对齐
       labelPosition: "right",
       // 添加用户的信息
@@ -152,8 +189,11 @@ export default {
         username: "",
         password: "",
         email: "",
-        mobile: ""
+        mobile: "",
+        roleList: [],
+        value: ""
       },
+      // 验证规则
       rules: {
         username: [
           { required: true, validator: validatePass, trigger: "blur" }
@@ -162,7 +202,10 @@ export default {
           { required: true, validator: validatePass2, trigger: "blur" }
         ],
         email: [{ validator: validatePass3, trigger: "blur" }]
-      }
+      },
+      // 下拉框选项
+      roleList: [],
+      value: ""
     };
   },
   methods: {
@@ -236,6 +279,7 @@ export default {
     // 点击 添加用户 按钮
     add() {
       this.title = "添加用户";
+      this.label = "用户名";
       this.showPasswordText = true;
       this.showAddBtn = true;
       this.showConfirmBtn = false;
@@ -329,21 +373,25 @@ export default {
     },
     // 点击 编辑用户信息 按钮
     handleEdit(id) {
-      console.log(id);
+      // console.log(id);
       this.title = "修改用户";
+      // this.label = "用户名";
       this.disabled = true;
       this.showPasswordText = false;
       this.showConfirmBtn = true;
       this.showAddBtn = false;
-      // 先通过id获取到当前用户
       this.$http({
         url: `http://localhost:8888/api/private/v1/users/${id}`,
         method: "get",
         headers: { Authorization: window.localStorage.getItem("token") }
       }).then(res => {
-        this.form = res.data.data;
+        console.log(res.data);
+        let { msg, status } = res.data.meta;
+        if (status === 200) {
+          this.form = res.data.data;
+          this.dialogFormVisible = true;
+        }
       });
-      this.dialogFormVisible = true;
     },
     // 提交编辑用户信息
     editUser(formName) {
@@ -438,6 +486,40 @@ export default {
             message: "已取消删除"
           });
         });
+    },
+    // 点击 分配角色 按钮
+    handleRole(id) {
+      this.assignRole = true;
+      // 先通过id获取到当前用户
+      this.$http({
+        url: `http://localhost:8888/api/private/v1/users/${id}`,
+        method: "get",
+        headers: { Authorization: window.localStorage.getItem("token") }
+      }).then(res => {
+        this.form = res.data.data;
+        this.value=res.data.data.rid
+      });
+      // 下拉框
+      this.$http({
+        url: "http://localhost:8888/api/private/v1/roles",
+        method: "get",
+        headers: { Authorization: window.localStorage.getItem("token") }
+      }).then(res => {
+        console.log(res.data.data);
+        // const value = res.data.data.id;
+        // const label = res.data.data.roleName;
+        // this.form.roleList.value = value;
+        // this.form.roleList.label = label;
+        this.roleList=res.data.data
+        console.log(this.form.roleList);
+      });
+    },
+    // 提交分配角色
+    addRole() {
+      this.assignRole = false;
+
+      console.log("role");
+      console.log(id);
     }
   },
 
