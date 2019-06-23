@@ -109,7 +109,7 @@
           <!-- v-model="form.region" -->
           <el-select placeholder="请选择角色" v-model="value">
             <!-- <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option> -->
+            <el-option label="区域二" value="beijing"></el-option>-->
             <el-option
               v-for="item in roleList"
               :key="item.value"
@@ -121,7 +121,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="assignRole = false">取 消</el-button>
-        <el-button type="primary" @click="addRole()">确 定</el-button>
+        <el-button type="primary" @click="addRole(form.id,value)">确 定</el-button>
       </div>
     </el-dialog>
   </el-card>
@@ -139,7 +139,7 @@ export default {
       }
       callback();
     };
-    // 长度在6到11个字符
+    // 密码长度在6到11个字符
     var validatePass2 = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请输入密码"));
@@ -497,7 +497,7 @@ export default {
         headers: { Authorization: window.localStorage.getItem("token") }
       }).then(res => {
         this.form = res.data.data;
-        this.value=res.data.data.rid
+        this.value = res.data.data.rid;
       });
       // 下拉框
       this.$http({
@@ -506,20 +506,37 @@ export default {
         headers: { Authorization: window.localStorage.getItem("token") }
       }).then(res => {
         console.log(res.data.data);
-        // const value = res.data.data.id;
-        // const label = res.data.data.roleName;
-        // this.form.roleList.value = value;
-        // this.form.roleList.label = label;
-        this.roleList=res.data.data
-        console.log(this.form.roleList);
+        this.roleList = res.data.data;
       });
     },
     // 提交分配角色
-    addRole() {
-      this.assignRole = false;
+    addRole(userId, roleId) {
+      // this.assignRole = false;
+      this.$http({
+        url: `http://localhost:8888/api/private/v1/users/${userId}/role`,
+        method: "put",
+        headers: { Authorization: window.localStorage.getItem("token") },
+        data: { rid: roleId }
+      }).then(res => {
+        let { msg, status } = res.data.meta;
+        if (status == 200) {
+          this.$message({
+            showClose: true,
+            message: msg,
+            type: "success"
+          });
+          this.assignRole = false;
+        } else {
+          this.$message({
+            showClose: true,
+            message: msg,
+            type: "error"
+          });
+        }
 
-      console.log("role");
-      console.log(id);
+        this.getUsersList();
+        // console.log(roleId);
+      });
     }
   },
 
