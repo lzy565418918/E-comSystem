@@ -59,14 +59,13 @@ export default {
   },
   methods: {
     submitForm(formName) {
-     
       this.$refs[formName].validate(valid => {
         console.log(this.ruleForm.pass);
         console.log(this.ruleForm.checkPass);
 
         if (valid) {
           this.$http({
-            url: "http://localhost:8888/api/private/v1/login",
+            url: "login",
             method: "post",
             data: {
               username: this.ruleForm.pass,
@@ -94,7 +93,7 @@ export default {
               });
             }
           });
-        }else {
+        } else {
           this.$message({
             showClose: true,
             message: "用户名和密码不能为空",
@@ -103,7 +102,6 @@ export default {
           return false;
         }
       });
-    
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();

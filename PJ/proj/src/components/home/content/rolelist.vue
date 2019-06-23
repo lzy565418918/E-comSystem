@@ -148,8 +148,8 @@ export default {
     // 获取角色列表
     getRoleList() {
       this.$http({
-        url: "http://localhost:8888/api/private/v1/roles",
-        headers: { Authorization: window.localStorage.getItem("token") },
+        url: "roles",
+        
         method: "get"
       }).then(res => {
         let { data, meta } = res.data;
@@ -179,9 +179,9 @@ export default {
         }
         if (valid) {
           this.$http({
-            url: "http://localhost:8888/api/private/v1/roles",
+            url: "roles",
             method: "post",
-            headers: { Authorization: window.localStorage.getItem("token") },
+            
             data: this.roleList
           }).then(res => {
             let { msg, status } = res.data.meta;

@@ -247,9 +247,9 @@ export default {
     // 获取用户列表
     getUsersList() {
       this.$http({
-        url: `http://localhost:8888/api/private/v1/users?query=${
-          this.query
-        }&pagenum=${this.pagenum}&pagesize=${this.pagesize}`,
+        url: `users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${
+          this.pagesize
+        }`,
         headers: {
           Authorization: window.localStorage.getItem("token")
         },
@@ -288,9 +288,8 @@ export default {
     changeStatus(id, status) {
       console.log(id, status);
       this.$http({
-        url: `http://localhost:8888/api/private/v1/users/${id}/state/${status}`,
-        method: "put",
-        headers: { Authorization: window.localStorage.getItem("token") }
+        url: `users/${id}/state/${status}`,
+        method: "put"
       })
         .then(res => {
           // console.log(res);
@@ -372,9 +371,9 @@ export default {
         }
         if (valid) {
           this.$http({
-            url: "http://localhost:8888/api/private/v1/users",
+            url: "users",
             method: "post",
-            headers: { Authorization: window.localStorage.getItem("token") },
+
             data: this.form
           }).then(res => {
             // console.log(res);
@@ -417,9 +416,8 @@ export default {
     // 点击 编辑用户信息 按钮
     handleEdit(id) {
       this.$http({
-        url: `http://localhost:8888/api/private/v1/users/${id}`,
-        method: "get",
-        headers: { Authorization: window.localStorage.getItem("token") }
+        url: `users/${id}`,
+        method: "get"
       }).then(res => {
         // console.log(res.data);
         let { msg, status } = res.data.meta;
@@ -455,11 +453,9 @@ export default {
         }
         if (valid) {
           this.$http({
-            url: `http://localhost:8888/api/private/v1/users/${
-              this.userform.id
-            }`,
+            url: `users/${this.userform.id}`,
             method: "put",
-            headers: { Authorization: window.localStorage.getItem("token") },
+
             data: {
               email: this.userform.email,
               mobile: this.userform.mobile
@@ -505,10 +501,9 @@ export default {
           // console.log(id);
 
           this.$http({
-            url: `http://localhost:8888/api/private/v1/users/${id}`,
-            method: "delete",
+            url: `users/${id}`,
+            method: "delete"
             // data: { id: "url:" + id },
-            headers: { Authorization: window.localStorage.getItem("token") }
           }).then(res => {
             // console.log(res);
             const { msg, status } = res.data.meta;
@@ -540,9 +535,8 @@ export default {
       this.assignRole = true;
       // 先通过id获取到当前用户
       this.$http({
-        url: `http://localhost:8888/api/private/v1/users/${id}`,
-        method: "get",
-        headers: { Authorization: window.localStorage.getItem("token") }
+        url: `users/${id}`,
+        method: "get"
       }).then(res => {
         this.role = res.data.data;
         if (res.data.data.rid !== -1) {
@@ -553,9 +547,8 @@ export default {
       });
       // 下拉框
       this.$http({
-        url: "http://localhost:8888/api/private/v1/roles",
-        method: "get",
-        headers: { Authorization: window.localStorage.getItem("token") }
+        url: "roles",
+        method: "get"
       }).then(res => {
         this.roleList = res.data.data;
       });
@@ -563,9 +556,9 @@ export default {
     // 提交分配角色
     addRole(userId, roleId) {
       this.$http({
-        url: `http://localhost:8888/api/private/v1/users/${userId}/role`,
+        url: `users/${userId}/role`,
         method: "put",
-        headers: { Authorization: window.localStorage.getItem("token") },
+
         data: { rid: roleId }
       }).then(res => {
         let { msg, status } = res.data.meta;
