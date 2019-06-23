@@ -221,8 +221,14 @@ export default {
         method: "get"
       }).then(res => {
         console.log(res.data.data);
-        let { users, total, pagenum } = res.data.data;
+        let { users, total } = res.data.data;
+        
         this.tableData = users;
+        if (this.tableData.length === 0 && this.pagenum!==1) {
+          this.pagenum--;
+          this.getUsersList();
+          return
+        }
         this.total = total;
         console.log(this.tableData);
       });
