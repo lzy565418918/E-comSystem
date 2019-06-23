@@ -82,23 +82,29 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- dialogFormVisible表示模态框的显示和隐藏 -->
-    <el-dialog :title="title" :visible.sync="dialogFormVisible">
-      <el-form :model="form" label-width="100px" label-position="right" :rules="rules" ref="form">
+    <!-- 添加角色模态框 -->
+    <!-- roleListVisible表示模态框的显示和隐藏 -->
+    <el-dialog title="添加角色" :visible.sync="roleListVisible">
+      <el-form
+        :model="roleList"
+        label-width="100px"
+        label-position="right"
+        :rules="rules"
+        ref="roleList"
+      >
         <el-form-item label="角色名称" prop="roleName">
-          <el-input type="text" v-model="form.roleName" autocomplete="off"></el-input>
+          <el-input type="text" v-model="roleList.roleName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="角色描述" prop="roleDesc" >
-          <el-input type="text" v-model="form.roleDesc" autocomplete="off"></el-input>
+        <el-form-item label="角色描述" prop="roleDesc">
+          <el-input type="text" v-model="roleList.roleDesc" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="resetForm('form')">取 消</el-button>
-        <el-button type="primary" @click="addRole('form')" v-if="showAddBtn">确 定</el-button>
-        <el-button type="primary" @click="editUser('form')" v-if="showConfirmBtn">确认修改</el-button>
+        <el-button @click="resetForm('roleList')">取 消</el-button>
+        <el-button type="primary" @click="addRole('roleList')">确 定</el-button>
+        <!-- <el-button type="primary" @click="editUser('form')" v-if="showConfirmBtn">确认修改</el-button> -->
       </div>
     </el-dialog>
-
   </el-card>
 </template>
 
@@ -106,14 +112,14 @@
 export default {
   data() {
     // 角色名称不能为空
-    var roleName = (rule, value, callback) => {
+    var checkout = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请输入角色名称"));
       }
       callback();
     };
     // 角色描述不能为空
-    var roleDesc = (rule, value, callback) => {
+    var checkout2 = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请输入角色描述"));
       }
@@ -121,19 +127,16 @@ export default {
     };
     return {
       tableData: [],
-      form:'',
-      dialogFormVisible:false,
-      showAddBtn:false,
-      showConfirmBtn:false,
-      title:'',
-      rules: {
-        roleName: [
-          { required: true, validator: roleName, trigger: "blur" }
-        ],
-        roleDesc: [
-          { required: true, validator: roleDesc, trigger: "blur" }
-        ]
+      roleList: {
+        roleName: "",
+        roleDesc: ""
       },
+      // 添加角色模态框显示和隐藏
+      roleListVisible: false,
+      rules: {
+        roleName: [{ required: true, validator: checkout, trigger: "blur" }],
+        roleDesc: [{ required: true, validator: checkout2, trigger: "blur" }]
+      }
       // tags: [
       //   { name: "一级权限", type: "" },
       //   { name: "二级权限", type: "success" },
@@ -156,29 +159,30 @@ export default {
       });
     },
     // 点击 添加角色 按钮
-    add(){
-      this.title='添加角色',
-      this.dialogFormVisible='true'
-      this.showAddBtn='true'
+    add() {
+      this.roleListVisible = true;
     },
     // 提交添加角色
     addRole(formName) {
       // 验证角色名称和角色描述
       this.$refs[formName].validate(valid => {
-        if (!this.form.roleName.trim() || !this.form.roleDesc.trim()) {
+        if (
+          this.roleList.roleName.trim() == "" ||
+          this.roleList.roleDesc.trim() == ""
+        ) {
           this.$message({
             showClose: true,
             message: "角色名称和角色描述不能为空",
             type: "error"
           });
           return false;
-        } 
+        }
         if (valid) {
           this.$http({
             url: "http://localhost:8888/api/private/v1/roles",
             method: "post",
             headers: { Authorization: window.localStorage.getItem("token") },
-            data: this.form
+            data: this.roleList
           }).then(res => {
             let { msg, status } = res.data.meta;
             if (status === 201) {
@@ -188,9 +192,11 @@ export default {
                 type: "success"
               });
               this.$refs[formName].resetFields();
-                this.form= "";
-              this.dialogFormVisible = false;
-              this.getRoleList()
+              for (const key in this.roleList) {
+                this.roleList[key] = "";
+              }
+              this.roleListVisible = false;
+              this.getRoleList();
             } else {
               this.$message({
                 showClose: true,
@@ -205,9 +211,11 @@ export default {
     // 取消添加用户
     resetForm(formName) {
       this.$refs[formName].resetFields();
-      this.dialogFormVisible = false;
-      this.form = "";
-    },
+      this.roleListVisible = false;
+      for (const key in this.roleList) {
+        this.roleList[key] = "";
+      }
+    }
   },
   mounted() {
     this.getRoleList();
