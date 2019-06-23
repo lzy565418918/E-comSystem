@@ -94,7 +94,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="resetForm('form')">取 消</el-button>
-        <el-button type="primary" @click="addUser('form')" v-if="showAddBtn">确 定</el-button>
+        <el-button type="primary" @click="addRole('form')" v-if="showAddBtn">确 定</el-button>
         <el-button type="primary" @click="editUser('form')" v-if="showConfirmBtn">确认修改</el-button>
       </div>
     </el-dialog>
@@ -105,6 +105,20 @@
 <script>
 export default {
   data() {
+    // 角色名称不能为空
+    var roleName = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入角色名称"));
+      }
+      callback();
+    };
+    // 角色描述不能为空
+    var roleDesc = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入角色描述"));
+      }
+      callback();
+    };
     return {
       tableData: [],
       form:'',
@@ -112,7 +126,14 @@ export default {
       showAddBtn:false,
       showConfirmBtn:false,
       title:'',
-
+      rules: {
+        roleName: [
+          { required: true, validator: roleName, trigger: "blur" }
+        ],
+        roleDesc: [
+          { required: true, validator: roleDesc, trigger: "blur" }
+        ]
+      },
       // tags: [
       //   { name: "一级权限", type: "" },
       //   { name: "二级权限", type: "success" },
@@ -136,10 +157,57 @@ export default {
     },
     // 点击 添加角色 按钮
     add(){
-      this.title='',
+      this.title='添加角色',
       this.dialogFormVisible='true'
       this.showAddBtn='true'
-    }
+    },
+    // 提交添加角色
+    addRole(formName) {
+      // 验证角色名称和角色描述
+      this.$refs[formName].validate(valid => {
+        if (!this.form.roleName.trim() || !this.form.roleDesc.trim()) {
+          this.$message({
+            showClose: true,
+            message: "角色名称和角色描述不能为空",
+            type: "error"
+          });
+          return false;
+        } 
+        if (valid) {
+          this.$http({
+            url: "http://localhost:8888/api/private/v1/roles",
+            method: "post",
+            headers: { Authorization: window.localStorage.getItem("token") },
+            data: this.form
+          }).then(res => {
+            let { msg, status } = res.data.meta;
+            if (status === 201) {
+              this.$message({
+                showClose: true,
+                message: msg,
+                type: "success"
+              });
+              this.$refs[formName].resetFields();
+                this.form= "";
+              this.dialogFormVisible = false;
+              this.getRoleList()
+            } else {
+              this.$message({
+                showClose: true,
+                message: msg,
+                type: "error"
+              });
+            }
+          });
+        }
+      });
+    },
+    // 取消添加用户
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
+      this.dialogFormVisible = false;
+      this.form = "";
+    },
   },
   mounted() {
     this.getRoleList();

@@ -70,14 +70,14 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
     ></el-pagination>
-    <!-- 添加用户&编辑用户模态框 -->
+    <!-- 添加用户模态框 -->
     <!-- dialogFormVisible表示模态框的显示和隐藏 -->
-    <el-dialog :title="title" :visible.sync="dialogFormVisible">
+    <el-dialog title="添加用户" :visible.sync="dialogFormVisible">
       <el-form :model="form" label-width="100px" label-position="right" :rules="rules" ref="form">
         <el-form-item label="用户名" prop="username">
-          <el-input type="text" v-model="form.username" autocomplete="off" :disabled="disabled"></el-input>
+          <el-input type="text" v-model="form.username" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="密码" prop="password" v-if="showPasswordText">
+        <el-form-item label="密码" prop="password">
           <el-input type="password" v-model="form.password" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
@@ -92,8 +92,35 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="resetForm('form')">取 消</el-button>
-        <el-button type="primary" @click="addUser('form')" v-if="showAddBtn">确 定</el-button>
-        <el-button type="primary" @click="editUser('form')" v-if="showConfirmBtn">确认修改</el-button>
+        <el-button type="primary" @click="addUser('form')">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 修改用户模态框 -->
+    <!-- dialogFormVisible表示模态框的显示和隐藏 -->
+    <el-dialog title="修改用户" :visible.sync="dialogEditForm">
+      <el-form
+        :model="userform"
+        label-width="100px"
+        label-position="right"
+        :rules="rules"
+        ref="userform"
+      >
+        <el-form-item label="用户名" prop="username">
+          <el-input type="text" v-model="userform.username" autocomplete="off" :disabled="true"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="userform.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话">
+          <el-input v-model="userform.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="id" v-if="showIdText">
+          <el-input v-model="userform.id" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancelEdit('userform')">取 消</el-button>
+        <el-button type="primary" @click="editUser('userform')">确认修改</el-button>
       </div>
     </el-dialog>
 
@@ -103,7 +130,7 @@
       <el-form label-width="120px" label-position="right">
         <el-form-item label="当前用户">
           <!--  v-model="form.name" -->
-          {{form.username}}
+          {{role.username}}
         </el-form-item>
         <el-form-item label="请选择角色">
           <!-- v-model="form.region" -->
@@ -122,7 +149,7 @@
       <div slot="footer" class="dialog-footer">
         <!-- cancelRole assignRole = false -->
         <el-button @click="cancelRole()">取 消</el-button>
-        <el-button type="primary" @click="addRole(form.id,value)">确 定</el-button>
+        <el-button type="primary" @click="addRole(role.id,value)">确 定</el-button>
       </div>
     </el-dialog>
   </el-card>
@@ -160,13 +187,6 @@ export default {
       callback();
     };
     return {
-      // title的值为 添加用户 和 编辑信息
-      title: "",
-      label: "",
-      // 编辑用户时‘用户名’文本框禁用
-      disabled: false,
-      // 编辑用户时‘密码’文本框隐藏
-      showPasswordText: false,
       // id框隐藏
       showIdText: false,
       // showAddBtn添加用户时显示
@@ -179,20 +199,28 @@ export default {
       pagesize: 6,
       pagesizes: [3, 6, 10],
       total: 0,
-      // 设置添加&编辑模态框显示隐藏
+      // 设置添加模态框显示隐藏
       dialogFormVisible: false,
+      // 编辑模态框显示隐藏
+      dialogEditForm: false,
       // assignRole分配角色模态框
       assignRole: false,
       // 文字文本右对齐
       labelPosition: "right",
-      // 添加用户的信息
+      // 添加用户的数据源
       form: {
         username: "",
         password: "",
         email: "",
         mobile: "",
-        roleList: [],
-        value: ""
+        id: ""
+      },
+      // 编辑用户的数据源
+      userform: {
+        username: "",
+        email: "",
+        mobile: "",
+        id: ""
       },
       // 验证规则
       rules: {
@@ -204,9 +232,15 @@ export default {
         ],
         email: [{ validator: validatePass3, trigger: "blur" }]
       },
+      // 分配角色的信息
+      role: {
+        username: "",
+        id: ""
+      },
       // 下拉框选项
       roleList: [],
-      value: ""
+      value: "",
+      label: ""
     };
   },
   methods: {
@@ -221,7 +255,7 @@ export default {
         },
         method: "get"
       }).then(res => {
-        console.log(res.data.data);
+        // console.log(res.data.data);
         let { users, total } = res.data.data;
 
         this.tableData = users;
@@ -231,7 +265,7 @@ export default {
           return;
         }
         this.total = total;
-        console.log(this.tableData);
+        // console.log(this.tableData);
       });
     },
     // 切换页容量
@@ -259,7 +293,7 @@ export default {
         headers: { Authorization: window.localStorage.getItem("token") }
       })
         .then(res => {
-          console.log(res);
+          // console.log(res);
           const { status, msg } = res.data.meta;
           if (status === 200) {
             this.$message({
@@ -285,12 +319,10 @@ export default {
     },
     // 点击 添加用户 按钮
     add() {
-      this.form = "";
-      this.title = "添加用户";
-      this.showPasswordText = true;
-      this.showAddBtn = true;
-      this.showConfirmBtn = false;
-      this.disabled = false;
+      // this.form = "";
+      for (const key in this.form) {
+        this.form[key] = "";
+      }
       this.dialogFormVisible = true;
     },
     // 提交添加用户的信息
@@ -298,7 +330,10 @@ export default {
       // 邮箱验证正则表达式
       const reg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
       this.$refs[formName].validate(valid => {
-        if (!this.form.username.trim() || !this.form.password.trim()) {
+        if (
+          this.form.username.trim() == "" ||
+          this.form.password.trim() == ""
+        ) {
           this.$message({
             showClose: true,
             message: "用户名和密码不能为空",
@@ -342,10 +377,10 @@ export default {
             headers: { Authorization: window.localStorage.getItem("token") },
             data: this.form
           }).then(res => {
-            console.log(res);
+            // console.log(res);
 
             let { msg, status } = res.data.meta;
-            console.log(status);
+            // console.log(status);
 
             if (status === 201) {
               this.$message({
@@ -372,37 +407,44 @@ export default {
     },
     // 取消添加用户
     resetForm(formName) {
-      this.$refs[formName].resetFields();
+      // this.$refs[formName].resetFields();
       this.dialogFormVisible = false;
-      this.form = "";
+      // this.form = "";
+      for (const key in this.form) {
+        this.form[key] = "";
+      }
     },
     // 点击 编辑用户信息 按钮
     handleEdit(id) {
-      this.title = "修改用户";
-      this.disabled = true;
-      this.showPasswordText = false;
-      this.showConfirmBtn = true;
-      this.showAddBtn = false;
       this.$http({
         url: `http://localhost:8888/api/private/v1/users/${id}`,
         method: "get",
         headers: { Authorization: window.localStorage.getItem("token") }
       }).then(res => {
-        console.log(res.data);
+        // console.log(res.data);
         let { msg, status } = res.data.meta;
         if (status === 200) {
-          this.form = res.data.data;
-          this.dialogFormVisible = true;
+          this.userform = res.data.data;
+          this.dialogEditForm = true;
         }
       });
+    },
+    // 取消编辑用户
+    cancelEdit(formName) {
+      // this.$refs[formName].resetFields();
+      this.dialogEditForm = false;
+      // this.form = "";
+      for (const key in this.roleform) {
+        this.roleform[key] = "";
+      }
     },
     // 提交编辑用户信息
     editUser(formName) {
       // 邮箱验证正则表达式
       const reg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
       this.$refs[formName].validate(valid => {
-        if (this.form.email != "") {
-          if (!reg.test(this.form.email)) {
+        if (this.userform.email != "") {
+          if (!reg.test(this.userform.email)) {
             this.$message({
               showClose: true,
               message: "邮箱地址格式不正确",
@@ -413,12 +455,14 @@ export default {
         }
         if (valid) {
           this.$http({
-            url: `http://localhost:8888/api/private/v1/users/${this.form.id}`,
+            url: `http://localhost:8888/api/private/v1/users/${
+              this.userform.id
+            }`,
             method: "put",
             headers: { Authorization: window.localStorage.getItem("token") },
             data: {
-              email: this.form.email,
-              mobile: this.form.mobile
+              email: this.userform.email,
+              mobile: this.userform.mobile
             }
           }).then(res => {
             let { msg, status } = res.data.meta;
@@ -430,11 +474,11 @@ export default {
               });
               // 重置表单
               this.$refs[formName].resetFields();
-              for (const key in this.form) {
-                this.form[key] = "";
+              for (const key in this.userform) {
+                this.userform[key] = "";
               }
               // 关闭对话框
-              this.dialogFormVisible = false;
+              this.dialogEditForm = false;
               //重新刷新页面
               this.getUsersList();
             } else {
@@ -448,6 +492,7 @@ export default {
         }
       });
     },
+
     // 点击 删除用户 按钮
     handleDelete(id) {
       // console.log(id);
@@ -457,7 +502,7 @@ export default {
         type: "warning"
       })
         .then(() => {
-          console.log(id);
+          // console.log(id);
 
           this.$http({
             url: `http://localhost:8888/api/private/v1/users/${id}`,
@@ -465,7 +510,7 @@ export default {
             // data: { id: "url:" + id },
             headers: { Authorization: window.localStorage.getItem("token") }
           }).then(res => {
-            console.log(res);
+            // console.log(res);
             const { msg, status } = res.data.meta;
             if (status === 200) {
               this.$message({
@@ -499,7 +544,7 @@ export default {
         method: "get",
         headers: { Authorization: window.localStorage.getItem("token") }
       }).then(res => {
-        this.form = res.data.data;
+        this.role = res.data.data;
         if (res.data.data.rid !== -1) {
           this.value = res.data.data.rid;
         } else {
@@ -512,13 +557,11 @@ export default {
         method: "get",
         headers: { Authorization: window.localStorage.getItem("token") }
       }).then(res => {
-        console.log(res.data.data);
         this.roleList = res.data.data;
       });
     },
     // 提交分配角色
     addRole(userId, roleId) {
-      // this.assignRole = false;
       this.$http({
         url: `http://localhost:8888/api/private/v1/users/${userId}/role`,
         method: "put",
