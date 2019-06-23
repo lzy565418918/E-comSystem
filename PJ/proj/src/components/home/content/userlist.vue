@@ -120,7 +120,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="assignRole = false">取 消</el-button>
+        <!-- cancelRole assignRole = false -->
+        <el-button @click="cancelRole()">取 消</el-button>
         <el-button type="primary" @click="addRole(form.id,value)">确 定</el-button>
       </div>
     </el-dialog>
@@ -222,12 +223,12 @@ export default {
       }).then(res => {
         console.log(res.data.data);
         let { users, total } = res.data.data;
-        
+
         this.tableData = users;
-        if (this.tableData.length === 0 && this.pagenum!==1) {
+        if (this.tableData.length === 0 && this.pagenum !== 1) {
           this.pagenum--;
           this.getUsersList();
-          return
+          return;
         }
         this.total = total;
         console.log(this.tableData);
@@ -284,8 +285,8 @@ export default {
     },
     // 点击 添加用户 按钮
     add() {
+      this.form = "";
       this.title = "添加用户";
-      this.label = "用户名";
       this.showPasswordText = true;
       this.showAddBtn = true;
       this.showConfirmBtn = false;
@@ -373,15 +374,11 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields();
       this.dialogFormVisible = false;
-      for (const key in this.form) {
-        this.form[key] = "";
-      }
+      this.form = "";
     },
     // 点击 编辑用户信息 按钮
     handleEdit(id) {
-      // console.log(id);
       this.title = "修改用户";
-      // this.label = "用户名";
       this.disabled = true;
       this.showPasswordText = false;
       this.showConfirmBtn = true;
@@ -503,7 +500,11 @@ export default {
         headers: { Authorization: window.localStorage.getItem("token") }
       }).then(res => {
         this.form = res.data.data;
-        this.value = res.data.data.rid;
+        if (res.data.data.rid !== -1) {
+          this.value = res.data.data.rid;
+        } else {
+          this.value = "";
+        }
       });
       // 下拉框
       this.$http({
@@ -543,6 +544,13 @@ export default {
         this.getUsersList();
         // console.log(roleId);
       });
+    },
+    // 取消分配角色
+    cancelRole() {
+      this.assignRole = false;
+      for (const key in this.form) {
+        this.form[key] = "";
+      }
     }
   },
 
