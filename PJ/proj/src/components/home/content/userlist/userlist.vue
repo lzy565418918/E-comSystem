@@ -2,11 +2,7 @@
   <!-- <router-view></router-view> -->
   <el-card>
     <!-- 面包屑导航栏 -->
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
-    </el-breadcrumb>
+    <mybeard title1="用户管理" title2="用户列表"></mybeard>
     <!-- 查询功能 -->
     <!-- <div class="mycol"> -->
     <el-col :span="7" class="mycol">
@@ -156,6 +152,7 @@
 </template>
 
 <script>
+import mybeard from '../../../mybeard'
 export default {
   data() {
     // 用户名长度在3到8个字符
@@ -588,7 +585,9 @@ export default {
       }
     }
   },
-
+  components:{
+    mybeard
+  },  
   mounted() {
     this.getUsersList();
   }

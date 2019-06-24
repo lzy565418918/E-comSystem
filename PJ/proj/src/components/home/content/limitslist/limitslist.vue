@@ -1,11 +1,7 @@
 <template>
   <el-card>
     <!-- 面包屑导航栏 -->
-    <el-breadcrumb separator-class="el-icon-arrow-right" class="mymar">
-      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>权限管理</el-breadcrumb-item>
-      <el-breadcrumb-item>权限列表</el-breadcrumb-item>
-    </el-breadcrumb>
+    <mybeard class="mymar" title1="权限管理" title2="权限列表"></mybeard>
     <!-- 数据表格 -->
     <el-table :data="tableData" border style="width: 100%" type="index" max-height="500px">
       <el-table-column type="index"></el-table-column>
@@ -17,6 +13,7 @@
 </template>
 
 <script>
+import mybeard from '../../../mybeard'
 export default {
   data() {
     return {
@@ -47,6 +44,7 @@ export default {
       });
     }
   },
+  components:{mybeard},
   mounted() {
     this.getRoleList();
   }

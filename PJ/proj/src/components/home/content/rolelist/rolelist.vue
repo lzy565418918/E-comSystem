@@ -2,18 +2,14 @@
   <!-- <router-view></router-view> -->
   <el-card>
     <!-- 面包屑导航栏 -->
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>权限管理</el-breadcrumb-item>
-      <el-breadcrumb-item>角色列表</el-breadcrumb-item>
-    </el-breadcrumb>
+    <mybeard title1="权限管理" title2="角色列表"></mybeard>
     <el-col :span="3" class="mycol">
       <el-button plain @click="add">添加角色</el-button>
     </el-col>
     <!-- 数据表格 -->
     <el-table :data="tableData" border style="width: 100%" type="index">
       <!-- 点击箭头展开的内容 -->
-      <el-table-column type="expand">
+      <el-table-column type="expand" lazy>
         <!-- <el-tag v-for="tag in tableData.children" :key="tag.authName" closable >
             {{tag.authName}}v-for="(item, index) in items" :key="index"
         </el-tag>-->
@@ -23,8 +19,8 @@
         <el-tag v-for="tag in tableData[0].children" :key="tag" closable type="success">{{tag.children[0].authName}}</el-tag>
         <i class="el-icon-arrow-right myicon"></i>
         <!-- <el-tag v-for="tag in tableData[0].children" :key="tag" closable type="warning">{{tag.children[0].chidlren[0].authName}}</el-tag> -->
-        <!-- <el-tag closable type="warning">三级权限</el-tag>
-        <el-tag closable type="warning">三级权限</el-tag> -->
+        <el-tag closable type="warning" :disable-transitions="false">三级权限</el-tag>
+        <el-tag closable type="warning">三级权限</el-tag>
 
         <!-- <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand">
@@ -131,6 +127,7 @@
 </template>
 
 <script>
+  import mybeard from '../../../mybeard'
 export default {
   data() {
     // 角色名称不能为空
@@ -335,6 +332,9 @@ export default {
           });
         });
     }
+  },
+  components:{
+    mybeard
   },
   mounted() {
     this.getRoleList();
