@@ -22,12 +22,12 @@ export default {
     // Content
   },
   mounted(){
-    const token = window.localStorage.getItem('token')
-    console.log(token);
-    if(!token){
-      this.$message.error('请先登录')
-      this.$router.push({ name: 'login' })
-    }
+    // const token = window.localStorage.getItem('token')
+    // console.log(token);
+    // if(!token){
+    //   this.$message.error('请先登录')
+    //   this.$router.push({ name: 'login' })
+    // }
   }
 };
 </script>

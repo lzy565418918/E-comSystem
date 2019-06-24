@@ -15,16 +15,16 @@
       <!-- 点击箭头展开的内容 -->
       <el-table-column type="expand">
         <!-- <el-tag v-for="tag in tableData.children" :key="tag.authName" closable >
-            {{tag.authName}}
+            {{tag.authName}}v-for="(item, index) in items" :key="index"
         </el-tag>-->
 
-        <el-tag closable>一级权限</el-tag>
+        <el-tag  v-for="tag in tableData.children" :key="tag" closable>{{tag.authName}}</el-tag>
         <i class="el-icon-arrow-right myicon"></i>
-        <el-tag closable type="success">二级权限</el-tag>
+        <el-tag v-for="tag in tableData[0].children" :key="tag" closable type="success">{{tag.children[0].authName}}</el-tag>
         <i class="el-icon-arrow-right myicon"></i>
-        <el-tag closable type="warning">三级权限</el-tag>
-        <el-tag closable type="warning">三级权限</el-tag>
-        <el-tag closable type="warning">三级权限</el-tag>
+        <!-- <el-tag v-for="tag in tableData[0].children" :key="tag" closable type="warning">{{tag.children[0].chidlren[0].authName}}</el-tag> -->
+        <!-- <el-tag closable type="warning">三级权限</el-tag>
+        <el-tag closable type="warning">三级权限</el-tag> -->
 
         <!-- <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand">
@@ -106,7 +106,7 @@
       </div>
     </el-dialog>
     <!-- 编辑角色模态框 -->
-    <!-- roleListVisible表示模态框的显示和隐藏 -->
+    <!-- editRoleListVisible表示模态框的显示和隐藏 -->
     <el-dialog title="编辑角色" :visible.sync="editRoleListVisible">
       <el-form
         :model="editRoleList"
@@ -186,6 +186,8 @@ export default {
         let { data, meta } = res.data;
         if (meta.status === 200) {
           this.tableData = data;
+          console.log(this.tableData);
+          
         }
       });
     },
