@@ -19,3 +19,11 @@
   .myicon {
     margin-right: 60px;
   }
+  .mytag1,
+  .mytag2,
+  .mytag3{
+      margin-top: 8px;
+  }
+  .mytag3{
+      margin-right: 10px;
+  }

@@ -1,100 +1,86 @@
-
-  <!-- <router-view></router-view> -->
-  <el-card>
-    <!-- 面包屑导航栏 -->
-    <mybeard title1="权限管理" title2="角色列表"></mybeard>
-    <el-col :span="3" class="mycol">
-      <el-button plain @click="add">添加角色</el-button>
-    </el-col>
-    <!-- 数据表格 -->
-    <el-table :data="tableData" border style="width: 100%" type="index">
-      <!-- 点击箭头展开的内容 -->
-      <el-table-column type="expand" lazy>
-        <!-- <el-tag v-for="tag in tableData.children" :key="tag.authName" closable >
-            {{tag.authName}}v-for="(item, index) in items" :key="index"
-        </el-tag>-->
-
-        <el-tag  v-for="tag in tableData.children" :key="tag" closable>{{tag.authName}}</el-tag>
-        <i class="el-icon-arrow-right myicon"></i>
-        <el-tag v-for="tag in tableData[0].children" :key="tag" closable type="success">{{tag.children[0].authName}}</el-tag>
-        <i class="el-icon-arrow-right myicon"></i>
-        <!-- <el-tag v-for="tag in tableData[0].children" :key="tag" closable type="warning">{{tag.children[0].chidlren[0].authName}}</el-tag> -->
-        <el-tag closable type="warning" :disable-transitions="false">三级权限</el-tag>
-        <el-tag closable type="warning">三级权限</el-tag>
-      </el-table-column>
-      <!-- 表头 -->
-      <el-table-column type="index" width="50"></el-table-column>
-      <el-table-column prop="roleName" label="角色名称" width="330"></el-table-column>
-      <el-table-column prop="roleDesc" label="角色描述" width="320"></el-table-column>
-      <el-table-column label="操作" width="320">
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            plain
-            type="primary"
-            icon="el-icon-edit"
-            @click="handleEdit(scope.row.id)"
-          ></el-button>
-          <el-button
-            size="mini"
-            plain
-            type="danger"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row.id)"
-          ></el-button>
-          <el-button
-            size="mini"
-            plain
-            type="success"
-            icon="el-icon-check"
-            @click="handleRole(scope.row.id)"
-          ></el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!-- 添加角色模态框 -->
-    <!-- roleListVisible表示模态框的显示和隐藏 -->
-    <el-dialog title="添加角色" :visible.sync="roleListVisible">
-      <el-form
-        :model="roleList"
-        label-width="100px"
-        label-position="right"
-        :rules="rules"
-        ref="roleList"
-      >
-        <el-form-item label="角色名称" prop="roleName">
-          <el-input type="text" v-model="roleList.roleName" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="角色描述" prop="roleDesc">
-          <el-input type="text" v-model="roleList.roleDesc" autocomplete="off"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="resetForm('roleList')">取 消</el-button>
-        <el-button type="primary" @click="addRole('roleList')">确 定</el-button>
-        <!-- <el-button type="primary" @click="editUser('form')" v-if="showConfirmBtn">确认修改</el-button> -->
-      </div>
-    </el-dialog>
-    <!-- 编辑角色模态框 -->
-    <!-- editRoleListVisible表示模态框的显示和隐藏 -->
-    <el-dialog title="编辑角色" :visible.sync="editRoleListVisible">
-      <el-form
-        :model="editRoleList"
-        label-width="100px"
-        label-position="right"
-        :rules="rules"
-        ref="editRoleList"
-      >
-        <el-form-item label="角色名称" prop="roleName">
-          <el-input type="text" v-model="editRoleList.roleName" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="角色描述" prop="roleDesc">
-          <el-input type="text" v-model="editRoleList.roleDesc" autocomplete="off"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="resetRoleForm('editRoleList')">取 消</el-button>
-        <el-button type="primary" @click="editRole('editRoleList')">确认修改</el-button>
-      </div>
-    </el-dialog>
-  </el-card>
+<!DOCTYPE html>
+<el-card>
+  <!-- 面包屑导航栏 -->
+  <mybeard title1="权限管理" title2="角色列表"></mybeard>
+  <el-col :span="3" class="mycol">
+    <el-button plain @click="add">添加角色</el-button>
+  </el-col>
+  <!-- 数据表格 -->
+  <el-table :data="tableData" style="width: 100%" type="index" :default-expand-all="true">
+    <!-- 点击箭头展开的内容 -->
+    <el-table-column type="expand">
+      <template slot-scope="scope">
+        <!-- 把整个权限分为一行俩列 -->
+        <el-row v-for="(tag1,index1) in scope.row.children" :key="index1">
+          <!-- 一级权限为第一列 -->
+          <el-col :span="5">
+            <el-tag @change="closeTag" class="mytag1" closable>
+              {{tag1.authName}}
+            </el-tag>
+            <i class="el-icon-arrow-right myicon"></i>
+          </el-col>
+          <!-- 二级权限为第二列，同时此列又分为一行两列 -->
+          <el-col :span="19">
+            <el-row v-for="(tag2,index2) in tag1.children" :key="index2">
+              <el-col :span="6">
+                <el-tag @change="closeTag" class="mytag2" type="success" closable>
+                  {{tag2.authName}}
+                </el-tag>
+                <i class="el-icon-arrow-right myicon"></i>
+              </el-col>
+              <el-col :span="18">
+                <el-tag @change="closeTag" class="mytag3" v-for="(tag3,index3) in tag2.children" :key="index3" type="warning" closable
+                  :disable-transitions="false">{{tag3.authName}}</el-tag>
+              </el-col>
+            </el-row>
+          </el-col>
+        </el-row>
+      </template>
+    </el-table-column>
+    <!-- 表头 -->
+    <el-table-column type="index" width="50"></el-table-column>
+    <el-table-column prop="roleName" label="角色名称" width="330"></el-table-column>
+    <el-table-column prop="roleDesc" label="角色描述" width="320"></el-table-column>
+    <el-table-column label="操作" width="320">
+      <template slot-scope="scope">
+        <el-button size="mini" plain type="primary" icon="el-icon-edit" @click="handleEdit(scope.row.id)"></el-button>
+        <el-button size="mini" plain type="danger" icon="el-icon-delete" @click="handleDelete(scope.row.id)">
+        </el-button>
+        <el-button size="mini" plain type="success" icon="el-icon-check" @click="handleRole(scope.row.id)"></el-button>
+      </template>
+    </el-table-column>
+  </el-table>
+  <!-- 添加角色模态框 -->
+  <!-- roleListVisible表示模态框的显示和隐藏 -->
+  <el-dialog title="添加角色" :visible.sync="roleListVisible">
+    <el-form :model="roleList" label-width="100px" label-position="right" :rules="rules" ref="roleList">
+      <el-form-item label="角色名称" prop="roleName">
+        <el-input type="text" v-model="roleList.roleName" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="角色描述" prop="roleDesc">
+        <el-input type="text" v-model="roleList.roleDesc" autocomplete="off"></el-input>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="resetForm('roleList')">取 消</el-button>
+      <el-button type="primary" @click="addRole('roleList')">确 定</el-button>
+      <!-- <el-button type="primary" @click="editUser('form')" v-if="showConfirmBtn">确认修改</el-button> -->
+    </div>
+  </el-dialog>
+  <!-- 编辑角色模态框 -->
+  <!-- editRoleListVisible表示模态框的显示和隐藏 -->
+  <el-dialog title="编辑角色" :visible.sync="editRoleListVisible">
+    <el-form :model="editRoleList" label-width="100px" label-position="right" :rules="rules" ref="editRoleList">
+      <el-form-item label="角色名称" prop="roleName">
+        <el-input type="text" v-model="editRoleList.roleName" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="角色描述" prop="roleDesc">
+        <el-input type="text" v-model="editRoleList.roleDesc" autocomplete="off"></el-input>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="resetRoleForm('editRoleList')">取 消</el-button>
+      <el-button type="primary" @click="editRole('editRoleList')">确认修改</el-button>
+    </div>
+  </el-dialog>
+</el-card>
