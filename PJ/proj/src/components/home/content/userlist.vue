@@ -455,7 +455,6 @@ export default {
           this.$http({
             url: `users/${this.userform.id}`,
             method: "put",
-
             data: {
               email: this.userform.email,
               mobile: this.userform.mobile

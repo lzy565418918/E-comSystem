@@ -4,7 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 // 引入 myaxios
-import myaxios from '@/assents/js/myaxios.js'
+import myaxios from '../src/assets/js/myaxios'
 import ElementUI from 'element-ui'
 import '../node_modules/element-ui/lib/theme-chalk/index.css'
 
