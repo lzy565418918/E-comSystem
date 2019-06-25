@@ -91,7 +91,7 @@
           plain
           type="success"
           icon="el-icon-check"
-          @click="handleRole(scope)"
+          @click="handleRole(scope.row.children)"
         ></el-button>
       </template>
     </el-table-column>
@@ -167,13 +167,13 @@
     width="30%"
     :before-close="handleClose"
   >
-    <!-- <span>这是一段信息</span> -->
+    <!-- tree控件 -->
     <el-tree
-      :data="data"
+      :data="rightList"
       show-checkbox
       node-key="id"
-      :default-expanded-keys="[2, 3]"
-      :default-checked-keys="[5]"
+      :default-checked-keys="defaultRightList"
+      :default-expand-all="true"
       :props="defaultProps"
     >
     </el-tree>

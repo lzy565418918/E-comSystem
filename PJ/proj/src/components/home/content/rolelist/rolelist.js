@@ -18,6 +18,10 @@ export default {
     }
     return {
       tableData: [],
+      // 所有权限列表
+      rightList: [],
+      // 默认选中的权限
+      defaultRightList: [],
       // 添加模态框数据源
       roleList: {
         roleName: '',
@@ -38,6 +42,10 @@ export default {
       rules: {
         roleName: [{ required: true, validator: checkout, trigger: 'blur' }],
         roleDesc: [{ required: true, validator: checkout2, trigger: 'blur' }]
+      },
+      defaultProps: {
+        children: 'children',
+        label: 'authName'
       }
       // tags: [
       //   { name: "一级权限", type: "" },
@@ -51,7 +59,6 @@ export default {
     getRoleList () {
       this.$http({
         url: 'roles',
-
         method: 'get'
       }).then(res => {
         let { data, meta } = res.data
@@ -59,6 +66,16 @@ export default {
           this.tableData = data
           console.log(this.tableData)
         }
+      })
+    },
+    // 获取所有权限列表
+    getRightList () {
+      this.$http({
+        url: 'rights/tree',
+        method: 'get'
+      }).then(res => {
+        console.log(res.data.meta.msg)
+        this.rightList = res.data.data
       })
     },
     // 点击 添加角色 按钮
@@ -219,9 +236,26 @@ export default {
       })
     },
     // 点击 分配权限 按钮
-    handleRole(scope) {
-      console.log(scope.row.children);
-      
+    handleRole (rightData) {
+      this.$http({
+        url: 'rights/tree',
+        method: 'get'
+      }).then(res => {
+        let { data, meta } = res.data
+        if (meta.status === 200) {
+          // 将权限数据保存起来
+          this.defaultRightList = data
+          this.dialogVisible = true
+          // 将所有三级权限的 id 添加到 defaultChecked 中
+          rightData.forEach(item1 => {
+            item1.children.forEach(item2 => {
+              item2.children.forEach(iten3 => {
+                this.defaultRightList.push(iten3.id)
+              })
+            })
+          })
+        }
+      })
     }
   },
   components: {
@@ -229,5 +263,6 @@ export default {
   },
   mounted () {
     this.getRoleList()
+    this.getRightList()
   }
 }
