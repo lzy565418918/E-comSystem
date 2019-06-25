@@ -33,6 +33,8 @@ export default {
       roleListVisible: false,
       // 编辑角色模态框显示和隐藏
       editRoleListVisible: false,
+      // 分配权限模态框显示和隐藏
+      dialogVisible: false,
       rules: {
         roleName: [{ required: true, validator: checkout, trigger: 'blur' }],
         roleDesc: [{ required: true, validator: checkout2, trigger: 'blur' }]
@@ -202,6 +204,24 @@ export default {
             message: '已取消删除'
           })
         })
+    },
+    // 点击 关闭tag按钮
+    closeTag (roleId, rightId, scope) {
+      this.$http({
+        url: `roles/${roleId}/rights/${rightId}`,
+        method: 'delete'
+      }).then(res => {
+        let { data, meta } = res.data
+        if (meta.status === 200) {
+          this.$message.success(meta.msg)
+          scope.row.children = data
+        }
+      })
+    },
+    // 点击 分配权限 按钮
+    handleRole(scope) {
+      console.log(scope.row.children);
+      
     }
   },
   components: {
