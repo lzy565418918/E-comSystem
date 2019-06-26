@@ -91,7 +91,7 @@
           plain
           type="success"
           icon="el-icon-check"
-          @click="handleRole(scope.row.children)"
+          @click="handleRole(scope.row.id,scope.row.children)"
         ></el-button>
       </template>
     </el-table-column>
@@ -165,7 +165,6 @@
     title="分配权限"
     :visible.sync="dialogVisible"
     width="30%"
-    :before-close="handleClose"
   >
     <!-- tree控件 -->
     <el-tree
@@ -175,11 +174,12 @@
       :default-checked-keys="defaultRightList"
       :default-expand-all="true"
       :props="defaultProps"
+      ref="editRight"
     >
     </el-tree>
     <span slot="footer" class="dialog-footer">
       <el-button @click="dialogVisible = false">取 消</el-button>
-      <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      <el-button type="primary" @click="setRight">确 定</el-button>
     </span>
   </el-dialog>
 </el-card>

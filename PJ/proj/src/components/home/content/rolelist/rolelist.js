@@ -1,4 +1,4 @@
-
+/* eslint-disable standard/object-curly-even-spacing */
 import mybeard from '../../../mybeard'
 export default {
   data () {
@@ -20,6 +20,8 @@ export default {
       tableData: [],
       // 所有权限列表
       rightList: [],
+      // 选中角色的id
+      checkRoleId: null,
       // 默认选中的权限
       defaultRightList: [],
       // 添加模态框数据源
@@ -40,18 +42,21 @@ export default {
       // 分配权限模态框显示和隐藏
       dialogVisible: false,
       rules: {
-        roleName: [{ required: true, validator: checkout, trigger: 'blur' }],
-        roleDesc: [{ required: true, validator: checkout2, trigger: 'blur' }]
+        roleName: [{
+          required: true,
+          validator: checkout,
+          trigger: 'blur'
+        }],
+        roleDesc: [{
+          required: true,
+          validator: checkout2,
+          trigger: 'blur'
+        }]
       },
       defaultProps: {
         children: 'children',
         label: 'authName'
       }
-      // tags: [
-      //   { name: "一级权限", type: "" },
-      //   { name: "二级权限", type: "success" },
-      //   { name: "三级权限", type: "warning" }
-      // ]
     }
   },
   methods: {
@@ -61,7 +66,10 @@ export default {
         url: 'roles',
         method: 'get'
       }).then(res => {
-        let { data, meta } = res.data
+        let {
+          data,
+          meta
+        } = res.data
         if (meta.status === 200) {
           this.tableData = data
           console.log(this.tableData)
@@ -88,7 +96,7 @@ export default {
       this.$refs[formName].validate(valid => {
         if (
           this.roleList.roleName.trim() === '' ||
-            this.roleList.roleDesc.trim() === ''
+          this.roleList.roleDesc.trim() === ''
         ) {
           this.$message({
             showClose: true,
@@ -104,7 +112,10 @@ export default {
 
             data: this.roleList
           }).then(res => {
-            let { msg, status } = res.data.meta
+            let {
+              msg,
+              status
+            } = res.data.meta
             if (status === 201) {
               this.$message({
                 showClose: true,
@@ -142,7 +153,10 @@ export default {
         url: `roles/${roleId}`,
         method: 'get'
       }).then(res => {
-        let { data, meta } = res.data
+        let {
+          data,
+          meta
+        } = res.data
         if (meta.status === 200) {
           this.editRoleList = data
           this.editRoleListVisible = true
@@ -155,7 +169,7 @@ export default {
       this.$refs[formName].validate(valid => {
         if (
           this.editRoleList.roleName.trim() === '' ||
-            this.editRoleList.roleDesc.trim() === ''
+          this.editRoleList.roleDesc.trim() === ''
         ) {
           this.$message({
             showClose: true,
@@ -170,7 +184,10 @@ export default {
             method: 'put',
             data: this.editRoleList
           }).then(res => {
-            let { msg, status } = res.data.meta
+            let {
+              msg,
+              status
+            } = res.data.meta
             if (status === 200) {
               this.$message.success('修改成功')
               this.$refs[formName].resetFields()
@@ -206,7 +223,10 @@ export default {
             url: `roles/${roleId}`,
             method: 'delete'
           }).then(res => {
-            const { msg, status } = res.data.meta
+            const {
+              msg,
+              status
+            } = res.data.meta
             if (status === 200) {
               this.$message.success(msg)
               this.getRoleList()
@@ -228,7 +248,10 @@ export default {
         url: `roles/${roleId}/rights/${rightId}`,
         method: 'delete'
       }).then(res => {
-        let { data, meta } = res.data
+        let {
+          data,
+          meta
+        } = res.data
         if (meta.status === 200) {
           this.$message.success(meta.msg)
           scope.row.children = data
@@ -236,24 +259,57 @@ export default {
       })
     },
     // 点击 分配权限 按钮
-    handleRole (rightData) {
+    handleRole (roleId, rightData) {
+      this.defaultRightList = []
+      console.log(this.defaultRightList.length)
       this.$http({
         url: 'rights/tree',
         method: 'get'
       }).then(res => {
-        let { data, meta } = res.data
+        let {
+          data,
+          meta
+        } = res.data
         if (meta.status === 200) {
           // 将权限数据保存起来
-          this.defaultRightList = data
+          this.checkRoleId = roleId
+          this.rightList = data
           this.dialogVisible = true
-          // 将所有三级权限的 id 添加到 defaultChecked 中
-          rightData.forEach(item1 => {
-            item1.children.forEach(item2 => {
-              item2.children.forEach(iten3 => {
-                this.defaultRightList.push(iten3.id)
-              })
+        }
+        // 将所有三级权限的 id 添加到 defaultChecked 中
+        rightData.forEach(item1 => {
+          item1.children.forEach(item2 => {
+            item2.children.forEach(iten3 => {
+              this.defaultRightList.push(iten3.id)
             })
           })
+        })
+        console.log(this.defaultRightList.length)
+      })
+    },
+    // 提交 分配权限 功能
+    setRight () {
+      let nodes = this.$refs.editRight.getCheckedNodes(false, true)
+      console.log(nodes)
+      let roleids = []
+      nodes.forEach(item1 => {
+        roleids.push(item1.id)
+        this.defaultRightList = roleids
+      })
+      console.log(this.defaultRightList)
+      // eslint-disable-next-line no-unused-expressions
+      this.$http({
+        method: 'post',
+        url: `roles/${this.checkRoleId}/rights`,
+        data: { rids: roleids.join(',')}
+      }).then(res => {
+        let { status, msg } = res.data.meta
+        if (status === 200) {
+          this.$message.success(msg)
+          this.getRoleList()
+          this.dialogVisible = false
+        } else {
+          this.$message.error(msg)
         }
       })
     }
