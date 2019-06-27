@@ -24,7 +24,8 @@ export default {
       cat_id: [],
       formLabelWidth: '80px',
       // 数据得到响应前加载
-      loading: true
+      loading: true,
+      selectValue:[]
     }
   },
   methods: {

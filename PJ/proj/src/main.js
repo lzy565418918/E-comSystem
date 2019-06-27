@@ -5,10 +5,19 @@ import App from './App'
 import router from './router'
 // 引入 myaxios
 import myaxios from '../src/assets/js/myaxios'
+// 引入element-ui
 import ElementUI from 'element-ui'
+// 引入时间格式
+import Moment from 'moment'
 import '../node_modules/element-ui/lib/theme-chalk/index.css'
 import ElTreeGrid from 'element-tree-grid'
 Vue.use(ElementUI)
+
+Vue.use(Moment)
+
+Vue.filter('dateformat', function (value, pattern = 'YYYY-MM-DD HH:mm:ss') {
+  return Moment(value).format(pattern)
+})
 // 使用 myaxios 插件
 Vue.use(myaxios)
 Vue.component(ElTreeGrid.name, ElTreeGrid)
