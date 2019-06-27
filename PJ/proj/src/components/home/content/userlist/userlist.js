@@ -39,7 +39,7 @@ export default {
       tableData: [],
       query: '',
       pagenum: 1,
-      pagesize: JSON.parse(window.localStorage.getItem('page')) || 3,
+      pagesize: 3,
       pagesizes: [2, 3, 4, 6, 8, 10],
       total: 0,
       // 设置添加模态框显示隐藏
@@ -113,8 +113,8 @@ export default {
     },
     // 切换页容量
     changePageSize (val) {
-      window.localStorage.setItem('page', val)
-      this.pagesize = val
+      window.localStorage.setItem('userListPage', val)
+      this.pagesize = val || 3
       this.getUsersList()
       console.log(`每页 ${val} 条`)
     },
@@ -436,7 +436,7 @@ export default {
     mybeard
   },
   mounted () {
+    this.changePageSize(JSON.parse(window.localStorage.getItem('userListPage')))
     this.getUsersList()
-    this.changePageSize(JSON.parse(window.localStorage.getItem('page')))
   }
 }

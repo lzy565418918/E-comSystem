@@ -32,9 +32,9 @@
         </el-button>
       </template>
     </el-table-column>
-    <!-- 分页功能 -->
-    <el-pagination @size-change="changePageSize" @current-change="changePageNum" :current-page="pagenum"
-      :page-sizes="pagesizes" :page-size="pagesize" layout="total, sizes, prev, pager, next, jumper" :total="total">
-    </el-pagination>
   </el-table>
+  <!-- 分页功能 -->
+  <el-pagination @size-change="changePageSize" @current-change="changePageNum" :current-page="pagenum"
+    :page-sizes="pagesizes" :page-size="pagesize" layout="total, sizes, prev, pager, next, jumper" :total="total">
+  </el-pagination>
 </el-card>

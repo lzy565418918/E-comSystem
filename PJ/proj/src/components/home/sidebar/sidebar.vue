@@ -9,74 +9,17 @@
       @close="handleClose"
     >
       <!-- 用户管理 -->
-      <el-submenu index="1">
+      <el-submenu v-for="(item, index) in menusList" :key="index" :index="item.path">
         <div slot="title" class="my-title">
           <i class="el-icon-location"></i>
-          <span>用户管理</span>
+          <span>{{item.authName}}</span>
           <!-- <router-link to="/userlist"></router-link> -->
         </div>
-        <el-menu-item index="/home/userlist" router>
+        <el-menu-item v-for="(item2, index) in item.children" :key="index" :index="item2.path" router>
           <i class="el-icon-menu"></i>
-          <span>用户列表</span>
+          <span>{{item2.authName}}</span>
         </el-menu-item>
       </el-submenu>
-      <!-- 权限管理 -->
-      <el-submenu index="2">
-        <div slot="title" class="my-title">
-          <i class="el-icon-location"></i>
-          <span>权限管理</span>
-        </div>
-        <el-menu-item index="/home/rolelist">
-          <i class="el-icon-menu"></i>
-          <span>角色列表</span>
-        </el-menu-item>
-        <el-menu-item index="/home/limitslist">
-          <i class="el-icon-menu"></i>
-          <span>权限列表</span>
-        </el-menu-item>
-      </el-submenu>
-      <!-- 商品管理 -->
-      <el-submenu index="3">
-        <div slot="title" class="my-title">
-          <i class="el-icon-location"></i>
-          <span>商品管理</span>
-        </div>
-        <el-menu-item index="/home/goodlist">
-          <i class="el-icon-menu"></i>
-          <span>商品列表</span>
-        </el-menu-item>
-        <el-menu-item index="/home/classparams">
-          <i class="el-icon-menu"></i>
-          <span>分类参数</span>
-        </el-menu-item>
-        <el-menu-item index="/home/goodclass">
-          <i class="el-icon-menu"></i>
-          <span>商品分类</span>
-        </el-menu-item>
-      </el-submenu>
-      <!-- 订单管理 -->
-      <el-submenu index="4">
-        <div slot="title" class="my-title">
-          <i class="el-icon-location"></i>
-          <span>订单管理</span>
-        </div>
-        <el-menu-item index="/home/orderlist">
-          <i class="el-icon-menu"></i>
-          <span>订单列表</span>
-        </el-menu-item>
-      </el-submenu>
-      <!-- 数据统计 -->
-      <el-submenu index="5">
-        <div slot="title" class="my-title">
-          <i class="el-icon-location"></i>
-          <span>数据统计</span>
-        </div>
-        <el-menu-item index="/home/datareport">
-          <i class="el-icon-menu"></i>
-          <span>数据报表</span>
-        </el-menu-item>
-      </el-submenu>
-      <!-- -- -->
     </el-menu>
   </el-aside>
 </template>
@@ -85,6 +28,7 @@
 export default {
   data(){
     return {
+      menusList:[],
       'unique-opened':true
     }
   },
@@ -94,8 +38,23 @@ export default {
     },
     handleClose(key, keyPath) {
       console.log(key, keyPath);
+    },
+    getLeftMenus(){
+      this.$http({
+        url:'menus'
+      }).then(res=>{
+        let{meta,data}=res.data
+        if(meta.status===200){
+          this.menusList=data
+        }else{
+          this.$message.error(meta.msg)
+        }
+      })
     }
-  }
+  },
+  mounted() {
+    this.getLeftMenus()
+  },
 };
 </script>
 

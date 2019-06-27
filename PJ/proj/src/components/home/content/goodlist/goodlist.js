@@ -26,39 +26,34 @@ export default {
           this.total = data.total
           if (this.tableData.length === 0 && this.pagenum !== 1) {
             this.pagenum--
-            this.getUsersList()
+            this.getGoodsList()
           }
         }
       })
     },
     // 切换页容量
     changePageSize (val) {
-      window.localStorage.setItem('page', val)
-      this.pagesize = val
-      this.getUsersList()
+      window.localStorage.setItem('goodsListPage', val)
+      this.pagesize = val || 10
+      this.getGoodsList()
       console.log(`每页 ${val} 条`)
     },
     // 切换当前页
     changePageNum (val) {
       this.pagenum = val
-      this.getUsersList()
+      this.getGoodsList()
       console.log(`当前页: ${val}`)
     },
     // 模糊搜索用户名
     searchUsers () {
-      this.getUsersList()
+      this.getGoodsList()
     }
   },
   components: {
     mybeard
   },
   mounted () {
+    this.changePageSize(JSON.parse(window.localStorage.getItem('goodsListPage')))
     this.getGoodsList()
-  },
-  // 过滤器
-  filters: {
-    timefilter: function (value) {
-      return value + ',你好呀'
-    }
   }
 }

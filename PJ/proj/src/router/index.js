@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import login from '@/components/login/login'
 import home from '@/components/home/home'
 import '@/assets/css/index.css'
-import UserList from '@/components/home/content/userlist/userlist.vue'
+import Users from '@/components/home/content/userlist/userlist.vue'
 import RoleList from '@/components/home/content/rolelist/rolelist.vue'
 import LimitsList from '@/components/home/content/limitslist/limitslist.vue'
 import GoodList from '@/components/home/content/goodlist/goodlist.vue'
@@ -11,6 +11,8 @@ import ClassParams from '@/components/home/content/classparams/classparams.vue'
 import OrderList from '@/components/home/content/orderlist/orderlist.vue'
 import DataReport from '@/components/home/content/datareport/datareport.vue'
 import GoodClass from '@/components/home/content/goodclass/goodclass.vue'
+// 添加商品分类
+import AddGoods from '@/components/home/content/goodlist/addgoods/addgoods.vue'
 import {
   Message
 } from 'element-ui'
@@ -31,43 +33,48 @@ const router = new Router({
     name: 'home',
     component: home,
     children: [{
-      path: '/home/userlist',
-      name: 'userlist',
-      component: UserList
+      path: '/users',
+      name: 'users',
+      component: Users
     },
     {
-      path: '/home/limitslist',
-      name: 'limitslist',
+      path: '/rights',
+      name: 'rights',
       component: LimitsList
     },
     {
-      path: '/home/goodlist',
-      name: 'goodlist',
+      path: '/goods',
+      name: 'goods',
       component: GoodList
     },
     {
-      path: '/home/classparams',
-      name: 'classparams',
+      path: '/params',
+      name: 'params',
       component: ClassParams
     },
     {
-      path: '/home/goodclass',
-      name: 'goodclass',
+      path: '/categories',
+      name: 'categories',
       component: GoodClass
     },
     {
-      path: '/home/orderlist',
-      name: 'orderlist',
+      path: '/addgoods',
+      name: 'addgoods',
+      component: AddGoods
+    },
+    {
+      path: '/orders',
+      name: 'orders',
       component: OrderList
     },
     {
-      path: '/home/datareport',
-      name: 'datareport',
+      path: '/reports',
+      name: 'reports',
       component: DataReport
     },
     {
-      path: '/home/rolelist',
-      name: 'rolelist',
+      path: '/roles',
+      name: 'roles',
       component: RoleList
     }
     ]
