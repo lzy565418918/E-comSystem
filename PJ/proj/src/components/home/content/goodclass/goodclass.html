@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<el-card>
+  <!-- 面包屑导航栏 -->
+  <mybeard title1="商品管理" title2="商品分类"></mybeard>
+  <el-col :span="3" class="mycol">
+    <el-button plain @click="addClass">添加分类</el-button>
+  </el-col>
+  <!-- 数据表格 -->
+  <el-table border :data="pageList" style="width: 100%" type="index" row-key="cat_id"
+    :tree-props="{children: 'children', hasChildren: 'hasChildren'}" v-loading="loading">
+    <!-- 表头 -->
+    <el-table-column prop="cat_name" label="分类名称" width="320"></el-table-column>
+    <el-table-column label="级别" width="180">
+      <template slot-scope="scope">
+        {{scope.row.cat_level===0?'一级':scope.row.cat_level===1?"二级":"三级"}}
+      </template>
+    </el-table-column>
+    <el-table-column label="是否有效" width="180">
+      <template slot-scope="scope">
+        {{scope.row.cat_deleted==='true'?"有效":"无效"}}
+      </template>
+    </el-table-column>
+    <el-table-column label="操作">
+      <template slot-scope="scope">
+        <el-button size="mini" plain type="primary" icon="el-icon-edit" @click="handleEdit(scope.row.id)"></el-button>
+        <el-button size="mini" plain type="danger" icon="el-icon-delete" @click="handleDelete(scope.row.id)">
+        </el-button>
+      </template>
+    </el-table-column>
+  </el-table>
+  <!-- 分页 -->
+  <el-pagination
+  
+  @current-change="handleCurrentChange"
+  :current-page="pageNum"
+  :page-size="pageSize"
+  layout="total,  prev, pager, next, jumper"
+  :total="total">
+</el-pagination>
+  <!-- 添加商品分类模态框 -->
+  <!-- addGoodClass显示和隐藏 -->
+  <el-dialog title="添加商品分类" :visible.sync="addGoodClass">
+    <!--  :model="form" -->
+    <el-form>
+      <el-form-item label="分类名称" :label-width="formLabelWidth">
+        <!--  v-model="form.name" -->
+        <el-input autocomplete="off" v-model="addGoodClassName"></el-input>
+      </el-form-item>
+      <!-- 级联 -->
+      <el-form-item label="活动区域" :label-width="formLabelWidth">
+        <div class="block">
+          {{selectValue}}
+          <el-cascader :options="typeTwoGoodList"
+            :props="{ expandTrigger : 'hover' ,checkStrictly: true,value:'cat_id',label:'cat_name' }" clearable
+            placeholder="默认添加一级分类" v-model="selectValue">
+            <!-- <template slot-scope="scope">
+                {{scope.row}}
+        </template> -->
+          </el-cascader>
+        </div>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="addGoodClass = false">取 消</el-button>
+      <el-button type="primary" @click="postNewClass(selectValue)">确 定</el-button>
+    </div>
+  </el-dialog>
+</el-card>

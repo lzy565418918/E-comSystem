@@ -7,11 +7,11 @@ import router from './router'
 import myaxios from '../src/assets/js/myaxios'
 import ElementUI from 'element-ui'
 import '../node_modules/element-ui/lib/theme-chalk/index.css'
-
+import ElTreeGrid from 'element-tree-grid'
 Vue.use(ElementUI)
 // 使用 myaxios 插件
 Vue.use(myaxios)
-
+Vue.component(ElTreeGrid.name, ElTreeGrid)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

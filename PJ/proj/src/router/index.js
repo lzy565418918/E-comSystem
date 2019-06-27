@@ -11,6 +11,9 @@ import ClassParams from '@/components/home/content/classparams/classparams.vue'
 import OrderList from '@/components/home/content/orderlist/orderlist.vue'
 import DataReport from '@/components/home/content/datareport/datareport.vue'
 import GoodClass from '@/components/home/content/goodclass/goodclass.vue'
+import {
+  Message
+} from 'element-ui'
 Vue.use(Router)
 
 const router = new Router({
@@ -85,6 +88,7 @@ router.beforeEach((to, from, next) => {
     // 判断，如果token不存在则跳转到登录页面
     if (!token) {
       router.push('/login')
+      Message.warning('请先登录')
     } else {
       // 存在就继续
       next()
