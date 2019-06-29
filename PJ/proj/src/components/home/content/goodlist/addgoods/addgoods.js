@@ -40,16 +40,6 @@ export default {
     }
     return {
       active: 0,
-      // 添加商品的参数
-      addGoodsOption: {
-        goods_name: '',
-        goods_price: '',
-        goods_number: '',
-        goods_weight: '',
-        goods_cat: '',
-        attrs: [],
-        pics: []
-      },
       rules: {
         goodName: [{
           required: true,
@@ -83,6 +73,14 @@ export default {
         expandTrigger: 'hover',
         label: 'cat_name',
         value: 'cat_id'
+      },
+      // 提交新增商品
+      addGoods: {
+        goods_name: '',
+        goods_price: '',
+        goods_number: '',
+        goods_weight: ''
+        // goods_cat: this.value.join(',')
       },
       // 级联框
       value: [],
@@ -150,7 +148,28 @@ export default {
       })
     },
     handlePreview() {
-      console.log('handlePreview');
+      console.log('handlePreview')
+    },
+    // 添加商品
+    add() {
+      this.$http({
+        url: 'goods',
+        method: 'post',
+        data: {
+          ...this.addGoods,
+          goods_cat: this.value.join(',')
+        }
+      }).then(res => {
+        let {
+          msg,
+          status
+        } = res.data.meta
+        if (status === 201) {
+          this.$message.success(msg)
+        } else {
+          this.$message.error(msg)
+        }
+      })
     }
   },
   components: {
