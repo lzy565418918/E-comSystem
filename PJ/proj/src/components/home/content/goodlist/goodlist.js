@@ -47,6 +47,10 @@ export default {
     // 模糊搜索用户名
     searchUsers () {
       this.getGoodsList()
+    },
+    // 点击 添加商品 按钮
+    addgoods () {
+      this.$router.push('/addgoods')
     }
   },
   components: {

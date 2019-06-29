@@ -2,7 +2,7 @@
     <el-header>
       <el-col :span="4">
         <div class="grid-content bg-purple">
-          <img src="./logo.png" alt="黑马程序员" title="黑马程序员">
+          <img class="pic" src="./logo.png" alt="黑马程序员" title="黑马程序员">
         </div>
       </el-col>
       <el-col :span="16">
@@ -58,7 +58,7 @@ h1 {
   font-weight: normal;
   color: #fff;
 }
-img {
+.pic {
   height: 50px;
   cursor: pointer;
   position: relative;

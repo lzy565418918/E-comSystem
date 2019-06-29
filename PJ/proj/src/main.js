@@ -11,9 +11,17 @@ import ElementUI from 'element-ui'
 import Moment from 'moment'
 import '../node_modules/element-ui/lib/theme-chalk/index.css'
 import ElTreeGrid from 'element-tree-grid'
+// 引入富文本
+import VueQuillEditor from 'vue-quill-editor'
+// require styles
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 Vue.use(ElementUI)
 
 Vue.use(Moment)
+
+Vue.use(VueQuillEditor)
 
 Vue.filter('dateformat', function (value, pattern = 'YYYY-MM-DD HH:mm:ss') {
   return Moment(value).format(pattern)

@@ -25,7 +25,8 @@ export default {
       formLabelWidth: '80px',
       // 数据得到响应前加载
       loading: true,
-      selectValue:[]
+      // eslint-disable-next-line no-dupe-keys
+      selectValue: []
     }
   },
   methods: {

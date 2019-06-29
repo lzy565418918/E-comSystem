@@ -288,7 +288,7 @@ export default {
       })
     },
     // 提交 分配权限 功能
-    setRight() {
+    setRight () {
       // ref操纵DOM元素
       let nodes = this.$refs.editRight.getCheckedNodes(false, true)
       console.log(nodes)
