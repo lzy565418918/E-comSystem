@@ -82,13 +82,14 @@
           v-model="check"
           v-for="(item1,index) in item.attr_vals.split(',')"
           :label="item1"
+          :key="index"
           border
         ></el-checkbox>
       </div>
     </el-tab-pane>
     <el-tab-pane label="商品属性" name="third">
       <el-form label-position="top">
-        <el-form-item v-for="(item,index) in goodsAttr" :label="item.attr_name">
+        <el-form-item v-for="(item,index) in goodsAttr" :label="item.attr_name" :key="index">
           <el-input
             type="text"
             :value="item.attr_vals"

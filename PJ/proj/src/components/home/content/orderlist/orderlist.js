@@ -2,25 +2,32 @@
 import BMap from 'BMap'
 export default {
 
-  mounted () {
-    // var lng='';
-    // var lat='';
-    var map = new BMap.Map('allmap') // 创建地图实例  
-    var point = new BMap.Point(22.5755385074, 113.9232873917) // 创建点坐标  
-    map.centerAndZoom(point, 15) // 初始化地图，设置中心点坐标和地图级别      
-    map.enableScrollWheelZoom(true) // 开启鼠标滚轮缩放 
-
-    map.addControl(new BMap.NavigationControl())
-    map.addControl(new BMap.ScaleControl())
-    map.addControl(new BMap.OverviewMapControl())
-    map.addControl(new BMap.MapTypeControl())
-    map.setCurrentCity('深圳') // 仅当设置城市信息时，MapTypeControl的切换功能才能可用
-
-    // var opts = {type: BMAP_NAVIGATION_CONTROL_ZOOM} 
-    // map.addControl(new BMap.NavigationControl(opts)); 自定义控件
-
-    map.setMapStyle({
-      style: 'midnight'
-    }) // 地图风格
+  mounted() {
+     // 创建地图实例
+     var map = new BMap.Map('mapBox')
+     // 设置中心点
+     var point = new BMap.Point(116.404, 39.915)
+     // 添加控制件：
+     // 平移缩放控件
+     map.addControl(new BMap.NavigationControl())
+     // 比例尺
+     map.addControl(new BMap.ScaleControl())
+     // 缩略图
+     map.addControl(new BMap.OverviewMapControl())
+     // 初始化地图
+     map.centerAndZoom(point, 15)
+     // 设置 路线
+     var driving = new BMap.DrivingRoute(map, {
+         renderOptions: {
+             map: map,
+             autoViewport: true
+         }
+     })
+     // // 起点经纬度
+     var start = new BMap.Point(116.310791, 40.003419);
+     // // 终点经纬度
+     var end = new BMap.Point(116.486419, 39.877282);
+     // 开启搜索路线
+     driving.search(start, end);
   }
 }
