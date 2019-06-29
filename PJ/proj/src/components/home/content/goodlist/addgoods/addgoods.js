@@ -1,3 +1,4 @@
+/* eslint-disable space-before-function-paren */
 /* eslint-disable no-lone-blocks */
 /* eslint-disable indent */
 import mybeard from '../../../../mybeard.vue'
@@ -41,22 +42,22 @@ export default {
     return {
       active: 0,
       rules: {
-        goodName: [{
+        goods_name: [{
           required: true,
           validator: checkout,
           trigger: 'blur'
         }],
-        goodPrice: [{
+        goods_price: [{
           required: true,
           validator: checkout2,
           trigger: 'blur'
         }],
-        goodWeight: [{
+        goods_weight: [{
           required: true,
           validator: checkout3,
           trigger: 'blur'
         }],
-        goodSum: [{
+        goods_number: [{
           required: true,
           validator: checkout4,
           trigger: 'blur'
@@ -80,7 +81,6 @@ export default {
         goods_price: '',
         goods_number: '',
         goods_weight: ''
-        // goods_cat: this.value.join(',')
       },
       // 级联框
       value: [],
@@ -166,6 +166,7 @@ export default {
         } = res.data.meta
         if (status === 201) {
           this.$message.success(msg)
+          this.$router.push('/goods')
         } else {
           this.$message.error(msg)
         }

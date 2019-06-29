@@ -51,6 +51,35 @@ export default {
     // 点击 添加商品 按钮
     addgoods () {
       this.$router.push('/addgoods')
+    },
+    // 点击删除按钮
+    handleDelete (id) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$http({
+          url: `goods/${id}`,
+          method: 'delete'
+        }).then(res => {
+          let {
+            msg,
+            status
+          } = res.data.meta
+          if (status === 200) {
+            this.$message.success(msg)
+            this.getGoodsList()
+          } else {
+            this.$message.error(msg)
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     }
   },
   components: {
