@@ -1,21 +1,22 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import login from '@/components/login/login'
-import home from '@/components/home/home'
 import '@/assets/css/index.css'
-import Users from '@/components/home/content/userlist/userlist.vue'
-import RoleList from '@/components/home/content/rolelist/rolelist.vue'
-import LimitsList from '@/components/home/content/limitslist/limitslist.vue'
-import GoodList from '@/components/home/content/goodlist/goodlist.vue'
-import ClassParams from '@/components/home/content/classparams/classparams.vue'
-import OrderList from '@/components/home/content/orderlist/orderlist.vue'
-import DataReport from '@/components/home/content/datareport/datareport.vue'
-import GoodClass from '@/components/home/content/goodclass/goodclass.vue'
-// 添加商品分类
-import AddGoods from '@/components/home/content/goodlist/addgoods/addgoods.vue'
 import {
   Message
 } from 'element-ui'
+import Vue from 'vue'
+import Router from 'vue-router'
+var login = () => import('@/components/login/login')
+var home = () => import('@/components/home/home')
+var Users = () => import('@/components/home/content/userlist/userlist.vue')
+var RoleList = () => import('@/components/home/content/rolelist/rolelist.vue')
+var LimitsList = () => import('@/components/home/content/limitslist/limitslist.vue')
+var GoodList = () => import('@/components/home/content/goodlist/goodlist.vue')
+var ClassParams = () => import('@/components/home/content/classparams/classparams.vue')
+var OrderList = () => import('@/components/home/content/orderlist/orderlist.vue')
+var DataReport = () => import('@/components/home/content/datareport/datareport.vue')
+var GoodClass = () => import('@/components/home/content/goodclass/goodclass.vue')
+
+var AddGoods = () => import('@/components/home/content/goodlist/addgoods/addgoods.vue')
+
 Vue.use(Router)
 
 const router = new Router({

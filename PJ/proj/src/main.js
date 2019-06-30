@@ -9,6 +9,7 @@ import myaxios from '../src/assets/js/myaxios'
 import ElementUI from 'element-ui'
 // 引入时间格式
 import Moment from 'moment'
+// 引入echart
 import '../node_modules/element-ui/lib/theme-chalk/index.css'
 import ElTreeGrid from 'element-tree-grid'
 // 引入富文本
