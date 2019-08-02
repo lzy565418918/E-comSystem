@@ -250,7 +250,7 @@ export default {
     },
     // 取消添加用户
     resetForm (formName) {
-      // this.$refs[formName].resetFields();
+      this.$refs[formName].resetFields()
       this.dialogFormVisible = false
       // this.form = "";
       for (const key in this.form) {
@@ -259,17 +259,19 @@ export default {
     },
     // 点击 编辑用户信息 按钮
     handleEdit (id) {
-      this.$http({
-        url: `users/${id}`,
-        method: 'get'
-      }).then(res => {
-        // console.log(res.data);
-        let { status } = res.data.meta
-        if (status === 200) {
-          this.userform = res.data.data
-          this.dialogEditForm = true
-        }
-      })
+      this.dialogEditForm = true
+
+      // this.$http({
+      //   url: `users/${id}`,
+      //   method: 'get'
+      // }).then(res => {
+      //   // console.log(res.data);
+      //   let { status } = res.data.meta
+      //   if (status === 200) {
+      //     this.userform = res.data.data
+      //     this.dialogEditForm = true
+      //   }
+      // })
     },
     // 取消编辑用户
     cancelEdit (formName) {
